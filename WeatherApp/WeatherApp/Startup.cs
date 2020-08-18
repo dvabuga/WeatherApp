@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WeatherApp.Models;
+using WeatherApp.Services;
+using WeatherApp.Services.Interfaces;
 
 namespace WeatherApp
 {
@@ -23,6 +26,15 @@ namespace WeatherApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddTransient<IWeatherService, WeatherService>();
+            services.AddTransient<IFaultService, FaultService>();
+            services.AddHttpClient();
+
+            services.AddOptions();
+            var section = Configuration.GetSection("WeatherServiceSettings");
+            services.Configure<WeatherServiceSettings>(section);
+
             services.AddControllersWithViews();
         }
 
@@ -50,7 +62,7 @@ namespace WeatherApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Main}/{action=ShowChart}/{id?}");
             });
         }
     }

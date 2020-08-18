@@ -1,0 +1,65 @@
+﻿@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@model ChartModel
+
+
+<html>
+<body>
+
+    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+
+</body>
+</html>
+
+
+@section scripts
+{
+    <script>
+
+        var data = @Html.Raw(JsonConvert.SerializeObject(Model.ChartData));
+
+        $(document).ready(function () {
+            var dataPoints = [];
+
+            var options = {
+                animationEnabled: true,
+                theme: "light2",
+                title: {
+                    text: "Daily Sales Data"
+                },
+                axisX: {
+                    interval: 6,
+                    intervalType: "hour",
+                    valueFormatString: "YYYY-MM-DD HH:mm:ss",
+                    labelMaxWidth: 100
+                },
+                axisY: {
+                    title: "USD",
+                    titleFontSize: 24
+                },
+                data: [{
+                    xValueType: "dateTime",
+                    type: "spline",
+                    dataPoints: dataPoints
+                }]
+            };
+
+            console.log(data);
+            console.log(dataPoints);
+
+            $.each(data, function (i, value) {
+                console.log(value.Item1);
+                dataPoints.push({
+                    x: new Date(value.Item1),
+                    y: value.Item2
+                });
+            });
+
+
+            console.log(dataPoints);
+
+            $("#chartContainer").CanvasJSChart(options);
+        });
+
+    </script>
+}
