@@ -30,8 +30,7 @@ namespace WeatherApp.Services
             var httpResponse = await client.GetAsync($"{_configuration.OpenWeatherApiUrl}onecall?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&exclude=minutely&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru");
             var content = await httpResponse.Content.ReadAsStringAsync();
             var dataObj = JsonConvert.DeserializeObject<JObject>(content);
-            //var current = dataObj["current"];
-            //var daily = dataObj["daily"];
+     
             return dataObj;
         }
 
@@ -39,41 +38,36 @@ namespace WeatherApp.Services
         public async Task<List<ForecastModel>> GetPreviousForecast()
         {
             var client = _httpClientFactory.CreateClient();
-            var intervals = _configuration.Intervals; //интервалы вычисления погрешности
-            var lastDay = DateTime.Now.AddDays(-1).Date; //интервал на котором вычисляем погрешность - предыдущий день
-            var hoursOfLastDayUnixTime = new List<long>();
+            var mesuareInterval = DateTime.Now.AddDays(-1).Date; //интервал на котором вычисляем погрешность - предыдущий день
+            var timePointsOfMesuareInterval = new List<long>();
 
+            //get timePoints of mesuare interval
             for (var i = 0; i < 24;)
             {
-                var date = (DateTimeOffset)lastDay.AddHours(i);
-                hoursOfLastDayUnixTime.Add(date.ToUnixTimeSeconds());
+                var date = (DateTimeOffset)mesuareInterval.AddHours(i);
+                timePointsOfMesuareInterval.Add(date.ToUnixTimeSeconds());
                 i += 2;
             }
-
-            //var now = DateTimeOffset.Now.ToUnixTimeSeconds();
-            //var datesInUnixTime = intervals.Select(interval => DateTimeOffset.Now.ToUnixTimeSeconds() - interval * 60 * 60).ToList();
-            var urls = hoursOfLastDayUnixTime.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
+            
+            var urls = timePointsOfMesuareInterval.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
 
             IEnumerable<Task<JObject>> downloadTasksQuery = from url in urls
                                                             select ProcessURL(url, client); //urls.Select(url => ProcessURL(url, client));
+
+            //start tasks
             Task<JObject>[] downloadTasks = downloadTasksQuery.ToArray();
             var finishedTasks = await Task.WhenAll(downloadTasks);
 
-
-            var f = finishedTasks.Select(c => new ForecastModel()
+            var formattedTasksResults = finishedTasks.Select(c => new ForecastModel()
             {
                 Time = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(c["current"]["dt"])).ToLocalTime(),
                 Temp = Convert.ToInt64(c["current"]["temp"])
             }).OrderBy(c => c.Time).ToList();
    
-
-            return f;
+            return formattedTasksResults;
         }
 
        
-
-
-
         async Task<JObject> ProcessURL(string url, HttpClient client)
         {
             var response = await client.GetAsync(url);

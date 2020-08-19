@@ -11,6 +11,7 @@ namespace WeatherApp.Models
         public IEnumerable<int> Intervals { get; set; }
         public string OpenWeatherApiUrl { get; set; }
         public string OpenWeatherAppId { get; set; }
+        public string OauthToken { get; set; }
 
     }
 

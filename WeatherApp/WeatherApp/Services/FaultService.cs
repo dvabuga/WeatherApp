@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -18,14 +19,15 @@ namespace WeatherApp.Services
     public class FaultService : IFaultService
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IConfiguration _configuration;
+        private readonly WeatherServiceSettings _configuration;
 
-        public FaultService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public FaultService(IHttpClientFactory httpClientFactory, IOptions<WeatherServiceSettings> configuration)
         {
             _httpClientFactory = httpClientFactory;
-            _configuration = configuration;
+            _configuration = configuration.Value;
         }
 
+        //DRY
         async Task<JObject> ProcessURL(string url, HttpClient client)
         {
             var response = await client.GetAsync(url);
@@ -34,33 +36,18 @@ namespace WeatherApp.Services
             return dataObj;
         }
 
-        //private long GetDates(JObject forecast, int i)
-        //{
-        //    var date = DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(forecast["current"]["dt"])).ToLocalTime().ToUnixTimeSeconds();
-        //    var d = date - i * 60 * 60;
-        //    return d;
-        //}
 
         public async Task<ChartModel> CalculateFaults(List<ForecastModel> previousForecasts)
         {
             var client = _httpClientFactory.CreateClient();
 
-            var openWeatherUrl = _configuration["WeatherServiceSettings:OpenWeatherApiUrl"];
-            var lon = _configuration["WeatherServiceSettings:CityCoords:Longitude"];
-            var lat = _configuration["WeatherServiceSettings:CityCoords:Latitude"];
-            var appId = _configuration["WeatherServiceSettings:OpenWeatherAppId"];
-
             var chartModel = new ChartModel();
-            var intervals = new[] { 1, 6, 12 };
+            var intervals = _configuration.Intervals.ToList();
 
-            for (var i = 0; i < intervals.Length; i++)
+            for (var i = 0; i < intervals.Count(); i++)
             {
-                //for (var j = 0; j < previousForecasts.Length - 1; j++)
-                //{
-                //}
-
                 var datesUnixTime = previousForecasts.Select(forecast => forecast.Time.ToUnixTimeSeconds() - intervals[i] * 60 * 60).ToList();
-                var urls = datesUnixTime.Select(time => $"{openWeatherUrl}onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid={appId}&units=metric&lang=ru").ToList();
+                var urls = datesUnixTime.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
                 IEnumerable<Task<JObject>> downloadTasksQuery = from url in urls
                                                                 select ProcessURL(url, client);
                 Task<JObject>[] downloadTasks = downloadTasksQuery.ToArray();
@@ -77,31 +64,10 @@ namespace WeatherApp.Services
                 {
                     var temp = Math.Abs(previousForecasts[j].Temp - f[j].Temp);
                     chart.Add((f[j].Time.ToString("MM-dd-yy H:mm:ss"), temp));
-
-                    //var tt = f.Where(c => prev.Time.Hour - c.Time.Hour == intervals[i]).FirstOrDefault();
-                    //var temp = Math.Abs(prev.Temp - tt.Temp);
                 }
-                //foreach (var prev in previousForecasts)
-                //{
-                //    var tt = f.Where(c => prev.Time.Hour - c.Time.Hour == intervals[i]).FirstOrDefault();
-                //    var temp = Math.Abs(prev.Temp - tt.Temp);
-                //}
+
                 chartModel.ChartData.Add((chart, intervals[i]));
-
             }
-
-            // var currentTemp = Convert.ToDouble(currentForecast["current"]["temp"]);
-
-            //foreach (var prevForcast in previousForecasts)
-            //{
-            //    var previousDate = prevForcast["current"]["dt"]; //unixtime
-            //    var formattedPreviousDate = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(previousDate)).ToLocalTime().ToString("MM-dd-yy H:mm:ss");
-
-            //    var previousTemp = Convert.ToDouble(prevForcast["current"]["temp"]);
-
-            //    var forecastError = Math.Abs(currentTemp - previousTemp);
-            //    chartModel.ChartData.Add((formattedPreviousDate, forecastError));
-            //}
 
             return chartModel;
         }
@@ -128,7 +94,7 @@ namespace WeatherApp.Services
 
                     for (var j = 0; j < faults.ChartData[i].Item1.Count; j++)
                     {
-                        ws.Column(3 + i).Width = 15;
+                        ws.Column(3 + j).Width = 15;
                         ws.Cell(6 + k, 3 + j).Value = faults.ChartData[i].Item1[j].date;
                     }
 
@@ -141,24 +107,6 @@ namespace WeatherApp.Services
 
                 }
 
-                //foreach (var faultChart in faults.ChartData)
-                //{
-                //    for (var i = 0; i < faultChart.Item1.Count; i++)
-                //    {
-                //        ws.Column(3 + i).Width = 15;
-                //        ws.Cell(6, 3 + i).Value = faultChart.Item1[i].date;
-                //    }
-                //}
-
-
-
-
-                //for (var i = 0; i < faults.ChartData.Count; i++)
-                //{
-                //    ws.Cell(7, 3 + i).Value = faults.ChartData[i].temp;
-                //}
-
-                //workbook.SaveAs("filse1.xlsx");
                 workbook.SaveAs(stream);
                 stream.Position = 0;
             }
@@ -168,7 +116,7 @@ namespace WeatherApp.Services
 
         public async Task UploadFaultsToStorage(Stream faultFile)
         {
-            var oauthToken = _configuration["OauthToken"];
+            var oauthToken = _configuration.OauthToken;
             var diskApi = new DiskHttpApi(oauthToken);
             var uploadUrl = await diskApi.Files.GetUploadLinkAsync("/Files/file.xlsx", true, CancellationToken.None);
             await diskApi.Files.UploadAsync(uploadUrl, faultFile);

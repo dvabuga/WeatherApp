@@ -29,7 +29,7 @@ namespace WeatherApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = "Host=164.90.200.111;Port=5432;Database=forecast;Username=postgres;Password=m91opt6465e9lyc;";//Configuration.GetConnectionString("DefaultConnection");
+            var connectionString = Configuration["DefaultConnection"]; 
             var migrationsAssembly = typeof(ApplicationDbContext).GetTypeInfo().Assembly.GetName().Name;
             services.AddDbContext<ApplicationDbContext>(options =>
                                                 options.UseNpgsql(connectionString, b =>
