@@ -28,28 +28,41 @@ namespace WeatherApp.Controllers
 
         public async Task<IActionResult> ShowChart()
         {
-            var currentForecast = await _weatherService.GetCurrentForecast();
+            //var currentForecast = await _weatherService.GetCurrentForecast();
 
-            var current = JsonConvert.SerializeObject(currentForecast["current"]);
-            var daily = JsonConvert.SerializeObject(currentForecast["daily"]);
+            //var current = JsonConvert.SerializeObject(currentForecast["current"]);
+            //var daily = JsonConvert.SerializeObject(currentForecast["daily"]);
 
-            var forecast = _context.Forecasts.Where(c => c.CityName == "Казань")
-                                             .FirstOrDefault();
+            //var forecast = _context.Forecasts.Where(c => c.CityName == "Казань")
+            //                                 .FirstOrDefault();
 
-            if (forecast == null)
-            {
-                forecast = new Forecast();
-            }
+            //if (forecast == null)
+            //{
+            //    forecast = new Forecast();
+            //}
 
-            forecast.CurrentForecast = current;
-            forecast.DailyForecast = daily;
+            //forecast.CityName = "Казань";
+            //forecast.CurrentForecast = current;
+            //forecast.DailyForecast = daily;
+            //forecast.FaultUpdateLastDate = DateTimeOffset.Now;
 
-            _context.SaveChanges();
+            //if (forecast.Id == Guid.Empty)
+            //{
+            //    forecast.Id = Guid.NewGuid();
+            //    _context.Add(forecast);
+            //}
+            //else
+            //{
+            //    _context.Update(forecast);
+            //}
+
+            //_context.SaveChanges();
 
 
             var previousForecasts = await _weatherService.GetPreviousForecast();
-
             var model = await _faultService.CalculateFaults(previousForecasts);
+            //var s = _faultService.GetFileWithFaults(model);
+
 
             return View("ShowChart", model);
         }

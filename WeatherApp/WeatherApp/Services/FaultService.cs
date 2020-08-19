@@ -113,23 +113,52 @@ namespace WeatherApp.Services
             using (var workbook = new XLWorkbook())
             {
                 var ws = workbook.Worksheets.Add("Sample Sheet");
-                ws.Cell("C4").Value = $"Погрешности измерений на {DateTime.Now}";
-                ws.Range("C4:G4").Row(1).Merge();
-                ws.Cell("B6").Value = "Интервал";
-                ws.Cell("B7").Value = "Погрешность";
-                ws.Column(2).Width = 20;
 
-                //for (var i = 0; i < faults.ChartData.Count; i++)
+                ws.Column(2).Width = 20;
+                var k = 0;
+
+                for (var i = 0; i < faults.ChartData.Count; i++)
+                {
+                    ws.Cell("C4").Value = $"Погрешности измерений на {DateTime.Now}";
+                    ws.Range("C4:G4").Row(1).Merge();
+
+                    ws.Cell($"B{5 + k}").Value = $"Интервал - {faults.ChartData[i].interval}";
+                    ws.Cell($"B{6 + k}").Value = "Интервал";
+                    ws.Cell($"B{7 + k}").Value = "Погрешность";
+
+                    for (var j = 0; j < faults.ChartData[i].Item1.Count; j++)
+                    {
+                        ws.Column(3 + i).Width = 15;
+                        ws.Cell(6 + k, 3 + i).Value = faults.ChartData[i].Item1[j].date;
+                    }
+
+                    for (var j = 0; j < faults.ChartData[i].Item1.Count; j++)
+                    {
+                        ws.Cell(7 + k, 3 + i).Value = faults.ChartData[i].Item1[j].temp;
+                    }
+
+                    k += 4;
+
+                }
+
+                //foreach (var faultChart in faults.ChartData)
                 //{
-                //    ws.Column(3 + i).Width = 15;
-                //    ws.Cell(6, 3 + i).Value = faults.ChartData[i].date;
+                //    for (var i = 0; i < faultChart.Item1.Count; i++)
+                //    {
+                //        ws.Column(3 + i).Width = 15;
+                //        ws.Cell(6, 3 + i).Value = faultChart.Item1[i].date;
+                //    }
                 //}
+
+
+
 
                 //for (var i = 0; i < faults.ChartData.Count; i++)
                 //{
                 //    ws.Cell(7, 3 + i).Value = faults.ChartData[i].temp;
                 //}
 
+                //workbook.SaveAs("filse1.xlsx");
                 workbook.SaveAs(stream);
                 stream.Position = 0;
             }

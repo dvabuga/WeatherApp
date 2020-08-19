@@ -17,5 +17,7 @@ namespace WeatherApp.Models.DB
 
         [DataType("jsonb")]
         public string DailyForecast { get; set; }
+
+        public DateTimeOffset? FaultUpdateLastDate { get; set; }
     }
 }
