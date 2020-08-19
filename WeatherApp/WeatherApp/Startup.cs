@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using WeatherApp.Models;
+using WeatherApp.Models.DB;
 using WeatherApp.Services;
 using WeatherApp.Services.Interfaces;
 
@@ -26,6 +29,11 @@ namespace WeatherApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var migrationsAssembly = typeof(ApplicationDbContext).GetTypeInfo().Assembly.GetName().Name;
+            services.AddDbContext<ApplicationDbContext>(options =>
+                                                options.UseNpgsql(connectionString, b =>
+                                                            b.MigrationsAssembly(migrationsAssembly)));
 
             services.AddTransient<IWeatherService, WeatherService>();
             services.AddTransient<IFaultService, FaultService>();
