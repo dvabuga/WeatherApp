@@ -51,7 +51,7 @@ namespace WeatherApp.Services
             var appId = _configuration["WeatherServiceSettings:OpenWeatherAppId"];
 
             var chartModel = new ChartModel();
-            var intervals = new[] { 1, 6 };
+            var intervals = new[] { 1, 6, 12 };
 
             for (var i = 0; i < intervals.Length; i++)
             {
@@ -129,12 +129,12 @@ namespace WeatherApp.Services
                     for (var j = 0; j < faults.ChartData[i].Item1.Count; j++)
                     {
                         ws.Column(3 + i).Width = 15;
-                        ws.Cell(6 + k, 3 + i).Value = faults.ChartData[i].Item1[j].date;
+                        ws.Cell(6 + k, 3 + j).Value = faults.ChartData[i].Item1[j].date;
                     }
 
                     for (var j = 0; j < faults.ChartData[i].Item1.Count; j++)
                     {
-                        ws.Cell(7 + k, 3 + i).Value = faults.ChartData[i].Item1[j].temp;
+                        ws.Cell(7 + k, 3 + j).Value = faults.ChartData[i].Item1[j].temp;
                     }
 
                     k += 4;
