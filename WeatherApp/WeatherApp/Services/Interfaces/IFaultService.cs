@@ -10,7 +10,7 @@ namespace WeatherApp.Services.Interfaces
 {
     public interface IFaultService
     {
-        ChartModel CalculateFaults(JObject[] previousForecasts, JObject currentForecast);
+        Task<ChartModel> CalculateFaults(List<ForecastModel> prevForcast);
         Stream GetFileWithFaults(ChartModel faults);
         Task UploadFaultsToStorage(Stream faultsFile);
     }

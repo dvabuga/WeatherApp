@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -25,21 +26,82 @@ namespace WeatherApp.Services
             _configuration = configuration;
         }
 
-        public ChartModel CalculateFaults(JObject[] previousForecasts, JObject currentForecast)
+        async Task<JObject> ProcessURL(string url, HttpClient client)
         {
+            var response = await client.GetAsync(url);
+            var urlContents = await response.Content.ReadAsStringAsync();
+            var dataObj = JsonConvert.DeserializeObject<JObject>(urlContents);
+            return dataObj;
+        }
+
+        //private long GetDates(JObject forecast, int i)
+        //{
+        //    var date = DateTimeOffset.FromUnixTimeMilliseconds(Convert.ToInt64(forecast["current"]["dt"])).ToLocalTime().ToUnixTimeSeconds();
+        //    var d = date - i * 60 * 60;
+        //    return d;
+        //}
+
+        public async Task<ChartModel> CalculateFaults(List<ForecastModel> previousForecasts)
+        {
+            var client = _httpClientFactory.CreateClient();
+
+            var openWeatherUrl = _configuration["WeatherServiceSettings:OpenWeatherApiUrl"];
+            var lon = _configuration["WeatherServiceSettings:CityCoords:Longitude"];
+            var lat = _configuration["WeatherServiceSettings:CityCoords:Latitude"];
+            var appId = _configuration["WeatherServiceSettings:OpenWeatherAppId"];
+
             var chartModel = new ChartModel();
-            var currentTemp = Convert.ToDouble(currentForecast["current"]["temp"]);
+            var intervals = new[] { 1, 6 };
 
-            foreach (var prevForcast in previousForecasts)
+            for (var i = 0; i < intervals.Length; i++)
             {
-                var previousDate = prevForcast["current"]["dt"]; //unixtime
-                var formattedPreviousDate = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(previousDate)).ToLocalTime().ToString("MM-dd-yy H:mm:ss");
+                //for (var j = 0; j < previousForecasts.Length - 1; j++)
+                //{
+                //}
 
-                var previousTemp = Convert.ToDouble(prevForcast["current"]["temp"]);
+                var datesUnixTime = previousForecasts.Select(forecast => forecast.Time.ToUnixTimeSeconds() - intervals[i] * 60 * 60).ToList();
+                var urls = datesUnixTime.Select(time => $"{openWeatherUrl}onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid={appId}&units=metric&lang=ru").ToList();
+                IEnumerable<Task<JObject>> downloadTasksQuery = from url in urls
+                                                                select ProcessURL(url, client);
+                Task<JObject>[] downloadTasks = downloadTasksQuery.ToArray();
+                var finishedTasks = await Task.WhenAll(downloadTasks);
 
-                var forecastError = Math.Abs(currentTemp - previousTemp);
-                chartModel.ChartData.Add((formattedPreviousDate, forecastError));
+                var f = finishedTasks.Select(c => new ForecastModel()
+                {
+                    Time = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(c["current"]["dt"])).ToLocalTime(),
+                    Temp = Convert.ToInt64(c["current"]["temp"])
+                }).OrderBy(c => c.Time).ToList();
+
+                var chart = new List<(string date, double temp)>();
+                for (var j = 0; j < f.Count; j++)
+                {
+                    var temp = Math.Abs(previousForecasts[j].Temp - f[j].Temp);
+                    chart.Add((f[j].Time.ToString("MM-dd-yy H:mm:ss"), temp));
+
+                    //var tt = f.Where(c => prev.Time.Hour - c.Time.Hour == intervals[i]).FirstOrDefault();
+                    //var temp = Math.Abs(prev.Temp - tt.Temp);
+                }
+                //foreach (var prev in previousForecasts)
+                //{
+                //    var tt = f.Where(c => prev.Time.Hour - c.Time.Hour == intervals[i]).FirstOrDefault();
+                //    var temp = Math.Abs(prev.Temp - tt.Temp);
+                //}
+                chartModel.ChartData.Add((chart, intervals[i]));
+
             }
+
+            // var currentTemp = Convert.ToDouble(currentForecast["current"]["temp"]);
+
+            //foreach (var prevForcast in previousForecasts)
+            //{
+            //    var previousDate = prevForcast["current"]["dt"]; //unixtime
+            //    var formattedPreviousDate = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(previousDate)).ToLocalTime().ToString("MM-dd-yy H:mm:ss");
+
+            //    var previousTemp = Convert.ToDouble(prevForcast["current"]["temp"]);
+
+            //    var forecastError = Math.Abs(currentTemp - previousTemp);
+            //    chartModel.ChartData.Add((formattedPreviousDate, forecastError));
+            //}
 
             return chartModel;
         }
@@ -57,16 +119,16 @@ namespace WeatherApp.Services
                 ws.Cell("B7").Value = "Погрешность";
                 ws.Column(2).Width = 20;
 
-                for (var i = 0; i < faults.ChartData.Count; i++)
-                {
-                    ws.Column(3 + i).Width = 15;
-                    ws.Cell(6, 3 + i).Value = faults.ChartData[i].date;
-                }
+                //for (var i = 0; i < faults.ChartData.Count; i++)
+                //{
+                //    ws.Column(3 + i).Width = 15;
+                //    ws.Cell(6, 3 + i).Value = faults.ChartData[i].date;
+                //}
 
-                for (var i = 0; i < faults.ChartData.Count; i++)
-                {
-                    ws.Cell(7, 3 + i).Value = faults.ChartData[i].temp;
-                }
+                //for (var i = 0; i < faults.ChartData.Count; i++)
+                //{
+                //    ws.Cell(7, 3 + i).Value = faults.ChartData[i].temp;
+                //}
 
                 workbook.SaveAs(stream);
                 stream.Position = 0;

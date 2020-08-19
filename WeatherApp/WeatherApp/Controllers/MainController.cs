@@ -24,10 +24,10 @@ namespace WeatherApp.Controllers
 
         public async Task<IActionResult> ShowChart()
         {
-            var currentForecast = await _weatherService.GetCurrentForecast();
+            //var currentForecast = await _weatherService.GetCurrentForecast();
             var previousForecasts = await _weatherService.GetPreviousForecast();
 
-            var model = _faultService.CalculateFaults(previousForecasts, currentForecast);
+            var model = await _faultService.CalculateFaults(previousForecasts);
 
             return View("ShowChart", model);
         }

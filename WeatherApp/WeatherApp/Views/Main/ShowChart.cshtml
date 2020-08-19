@@ -5,8 +5,16 @@
 
 <html>
 <body>
+    @{
+        for (var i = 0; i < Model.ChartData.Count; i++)
+        {
+        <h2>График погрешности с интервалом @Model.ChartData[i].interval</h2>
+            <div id="chartContainer@(i)" style="height: 370px; width: 100%;"></div>
+            <br>
+        }
 
-    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+    }
+
 
 </body>
 </html>
@@ -18,48 +26,53 @@
 
         var data = @Html.Raw(JsonConvert.SerializeObject(Model.ChartData));
 
-        $(document).ready(function () {
-            var dataPoints = [];
 
-            var options = {
-                animationEnabled: true,
-                theme: "light2",
-                title: {
-                    text: "Погрешность измерения погоды г.Казань"
-                },
-                axisX: {
-                    interval: 6,
-                    intervalType: "hour",
-                    valueFormatString: "YYYY-MM-DD HH:mm:ss",
-                    labelMaxWidth: 100
-                },
-                axisY: {
-                    title: "Погрешность",
-                    titleFontSize: 24
-                },
-                data: [{
-                    xValueType: "dateTime",
-                    type: "spline",
-                    dataPoints: dataPoints
-                }]
-            };
+        $.each(data, function (i, value) {
 
-            console.log(data);
-            console.log(dataPoints);
+            $(document).ready(function () {
+                var dataPoints = [];
 
-            $.each(data, function (i, value) {
-                console.log(value.Item1);
-                dataPoints.push({
-                    x: new Date(value.Item1),
-                    y: value.Item2
+                var options = {
+                    animationEnabled: true,
+                    theme: "light2",
+                    //title: {
+                    //    text: "Погрешность измерения для интервала - " + value.Item3 
+                    //},
+                    axisX: {
+                        interval: 1,
+                        intervalType: "hour",
+                        valueFormatString: "YYYY-MM-DD HH:mm:ss",
+                        labelMaxWidth: 100
+                    },
+                    axisY: {
+                        title: "Погрешность",
+                        titleFontSize: 24
+                    },
+                    data: [{
+                        xValueType: "dateTime",
+                        type: "spline",
+                        dataPoints: dataPoints
+                    }]
+                };
+
+                console.log(data);
+                console.log(dataPoints);
+
+                $.each(value.Item1, function (i, value) {
+                    console.log(value.Item1);
+                    dataPoints.push({
+                        x: new Date(value.Item1),
+                        y: value.Item2
+                    });
                 });
+
+
+                console.log(dataPoints);
+
+                $("#chartContainer" + i).CanvasJSChart(options);
             });
-
-
-            console.log(dataPoints);
-
-            $("#chartContainer").CanvasJSChart(options);
         });
+       
 
     </script>
 }

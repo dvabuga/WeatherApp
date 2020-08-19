@@ -36,22 +36,41 @@ namespace WeatherApp.Services
         }
 
 
-        public async Task<JObject[]> GetPreviousForecast()
+        public async Task<List<ForecastModel>> GetPreviousForecast()
         {
             var client = _httpClientFactory.CreateClient();
-            var intervals = _configuration.Intervals;
+            var intervals = _configuration.Intervals; //интервалы вычисления погрешности
+            var lastDay = DateTime.Now.AddDays(-1).Date; //интервал на котором вычисляем погрешность - предыдущий день
+            var hoursOfLastDayUnixTime = new List<long>();
 
-            var now = DateTimeOffset.Now.ToUnixTimeSeconds();
-            var datesInUnixTime = intervals.Select(interval => DateTimeOffset.Now.ToUnixTimeSeconds() - interval * 60 * 60).ToList();
-            var urls = datesInUnixTime.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
+            for (var i = 0; i < 24;)
+            {
+                var date = (DateTimeOffset)lastDay.AddHours(i);
+                hoursOfLastDayUnixTime.Add(date.ToUnixTimeSeconds());
+                i += 2;
+            }
+
+            //var now = DateTimeOffset.Now.ToUnixTimeSeconds();
+            //var datesInUnixTime = intervals.Select(interval => DateTimeOffset.Now.ToUnixTimeSeconds() - interval * 60 * 60).ToList();
+            var urls = hoursOfLastDayUnixTime.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
 
             IEnumerable<Task<JObject>> downloadTasksQuery = from url in urls
                                                             select ProcessURL(url, client); //urls.Select(url => ProcessURL(url, client));
             Task<JObject>[] downloadTasks = downloadTasksQuery.ToArray();
             var finishedTasks = await Task.WhenAll(downloadTasks);
 
-            return finishedTasks;
+
+            var f = finishedTasks.Select(c => new ForecastModel()
+            {
+                Time = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(c["current"]["dt"])).ToLocalTime(),
+                Temp = Convert.ToInt64(c["current"]["temp"])
+            }).OrderBy(c => c.Time).ToList();
+   
+
+            return f;
         }
+
+       
 
 
 

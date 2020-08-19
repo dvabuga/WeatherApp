@@ -7,6 +7,6 @@ namespace WeatherApp.Models
 {
     public class ChartModel
     {
-        public List<(string date, double temp)> ChartData { get; set; } = new List<(string date, double temp)>();
+        public List<(List<(string date, double temp)>, int interval)> ChartData { get; set; } = new List<(List<(string date, double temp)>, int interval)>();
     }
 }
