@@ -12,5 +12,6 @@ namespace WeatherApp.Services.Interfaces
     {
         ChartModel CalculateFaults(JObject[] previousForecasts, JObject currentForecast);
         Stream GetFileWithFaults(ChartModel faults);
+        Task UploadFaultsToStorage(Stream faultsFile);
     }
 }

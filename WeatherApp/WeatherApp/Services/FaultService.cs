@@ -1,23 +1,28 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using WeatherApp.Models;
 using WeatherApp.Services.Interfaces;
+using YandexDisk.Client.Http;
 
 namespace WeatherApp.Services
 {
     public class FaultService : IFaultService
     {
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConfiguration _configuration;
 
-        public FaultService(IHttpClientFactory httpClientFactory)
+        public FaultService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
+            _configuration = configuration;
         }
 
         public ChartModel CalculateFaults(JObject[] previousForecasts, JObject currentForecast)
@@ -52,7 +57,6 @@ namespace WeatherApp.Services
                 ws.Cell("B7").Value = "Погрешность";
                 ws.Column(2).Width = 20;
 
-
                 for (var i = 0; i < faults.ChartData.Count; i++)
                 {
                     ws.Column(3 + i).Width = 15;
@@ -65,9 +69,18 @@ namespace WeatherApp.Services
                 }
 
                 workbook.SaveAs(stream);
+                stream.Position = 0;
             }
 
             return stream;
+        }
+
+        public async Task UploadFaultsToStorage(Stream faultFile)
+        {
+            var oauthToken = _configuration["OauthToken"];
+            var diskApi = new DiskHttpApi(oauthToken);
+            var uploadUrl = await diskApi.Files.GetUploadLinkAsync("/Files/file.xlsx", true, CancellationToken.None);
+            await diskApi.Files.UploadAsync(uploadUrl, faultFile);
         }
     }
 }
