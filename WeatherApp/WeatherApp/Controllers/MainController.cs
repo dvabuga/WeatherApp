@@ -27,7 +27,7 @@ namespace WeatherApp.Controllers
             var currentForecast = await _weatherService.GetCurrentForecast();
             var previousForecasts = await _weatherService.GetPreviousForecast();
 
-            var model = _faultService.CalculateFaults(previousForecasts, currentForecast); //GetChartModel(historicalForcastData, currentForcastData);
+            var model = _faultService.CalculateFaults(previousForecasts, currentForecast);
 
             return View("ShowChart", model);
         }

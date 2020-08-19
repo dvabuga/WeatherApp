@@ -28,11 +28,10 @@ namespace WeatherApp.Services
         {
             var client = _httpClientFactory.CreateClient();
             var httpResponse = await client.GetAsync($"{_configuration.OpenWeatherApiUrl}onecall?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&exclude=minutely&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru");
-            //var httpResponse = await client.GetAsync($"https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude=minutely&appid=a4d0952f20bf04be5b5542dbc80c0e18&units=metric&lang=ru");
             var content = await httpResponse.Content.ReadAsStringAsync();
             var dataObj = JsonConvert.DeserializeObject<JObject>(content);
-            var current = dataObj["current"];
-            var daily = dataObj["daily"];
+            //var current = dataObj["current"];
+            //var daily = dataObj["daily"];
             return dataObj;
         }
 
@@ -40,7 +39,6 @@ namespace WeatherApp.Services
         public async Task<JObject[]> GetPreviousForecast()
         {
             var client = _httpClientFactory.CreateClient();
-            //var intervals = new[] { 1, 3, 6, 12, 24, 48 };
             var intervals = _configuration.Intervals;
 
             var now = DateTimeOffset.Now.ToUnixTimeSeconds();

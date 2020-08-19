@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using ClosedXML.Excel;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +27,7 @@ namespace WeatherApp.Services
 
             foreach (var prevForcast in previousForecasts)
             {
-                var previousDate = prevForcast["current"]["dt"];
+                var previousDate = prevForcast["current"]["dt"]; //unixtime
                 var formattedPreviousDate = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(previousDate)).ToLocalTime().ToString("MM-dd-yy H:mm:ss");
 
                 var previousTemp = Convert.ToDouble(prevForcast["current"]["temp"]);
@@ -40,7 +41,33 @@ namespace WeatherApp.Services
 
         public Stream GetFileWithFaults(ChartModel faults)
         {
-            throw new NotImplementedException();
+            var stream = new MemoryStream();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var ws = workbook.Worksheets.Add("Sample Sheet");
+                ws.Cell("C4").Value = $"Погрешности измерений на {DateTime.Now}";
+                ws.Range("C4:G4").Row(1).Merge();
+                ws.Cell("B6").Value = "Интервал";
+                ws.Cell("B7").Value = "Погрешность";
+                ws.Column(2).Width = 20;
+
+
+                for (var i = 0; i < faults.ChartData.Count; i++)
+                {
+                    ws.Column(3 + i).Width = 15;
+                    ws.Cell(6, 3 + i).Value = faults.ChartData[i].date;
+                }
+
+                for (var i = 0; i < faults.ChartData.Count; i++)
+                {
+                    ws.Cell(7, 3 + i).Value = faults.ChartData[i].temp;
+                }
+
+                workbook.SaveAs(stream);
+            }
+
+            return stream;
         }
     }
 }
