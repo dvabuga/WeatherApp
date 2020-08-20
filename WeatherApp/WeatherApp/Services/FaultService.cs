@@ -118,7 +118,7 @@ namespace WeatherApp.Services
         {
             var oauthToken = _configuration.OauthToken;
             var diskApi = new DiskHttpApi(oauthToken);
-            var uploadUrl = await diskApi.Files.GetUploadLinkAsync("/Files/file.xlsx", true, CancellationToken.None);
+            var uploadUrl = await diskApi.Files.GetUploadLinkAsync("/Files/faults1.xlsx", true, CancellationToken.None);
             await diskApi.Files.UploadAsync(uploadUrl, faultFile);
         }
     }

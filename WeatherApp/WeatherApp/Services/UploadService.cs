@@ -37,24 +37,46 @@ namespace WeatherApp.Services
 
                     foreach (var forecast in forecasts)
                     {
-                        var lastUpdateTime = (DateTimeOffset)forecast.FaultUpdateLastDate;
-                        var d = lastUpdateTime.AddHours(3);
-                        var compare = DateTimeOffset.Compare(DateTimeOffset.Now, d);
-
-                        if (compare > 0)
+                        if (forecast.FaultUpdateLastDate == null)
                         {
-                            var previousForecasts = await _weatherService.GetPreviousForecast();
-                            var model = await _faultService.CalculateFaults(previousForecasts);
-                            var fileStream = _faultService.GetFileWithFaults(model);
-                            await _faultService.UploadFaultsToStorage(fileStream);
-                            fileStream.Dispose();
+                            await StartUpload(forecast);
                         }
-                        forecast.FaultUpdateLastDate = DateTimeOffset.Now;
+                        else
+                        {
+                            var lastUpdateTime = (DateTimeOffset)forecast.FaultUpdateLastDate;
+                            var d = lastUpdateTime.AddHours(3);
+                            var compare = DateTimeOffset.Compare(DateTimeOffset.Now, d);
+                            if (compare > 0)
+                            {
+                                await StartUpload(forecast);
+                            }
+                        }
+
                         _context.Update(forecast);
                         _context.SaveChanges();
                     }
                 }
                 await Task.Delay(30000);
+            }
+        }
+
+        private async Task StartUpload(Forecast forecast)
+        {
+            var previousForecasts = await _weatherService.GetPreviousForecast();
+            var model = await _faultService.CalculateFaults(previousForecasts);
+            var fileStream = _faultService.GetFileWithFaults(model);
+            try
+            {
+                await _faultService.UploadFaultsToStorage(fileStream);
+                forecast.FaultUpdateLastDate = DateTimeOffset.Now;
+            }
+            catch (Exception ex)
+            {
+                //if updating document is opened by user in browser, it will cause I.O block exception
+            }
+            finally
+            {
+                fileStream.Dispose();
             }
         }
     }
