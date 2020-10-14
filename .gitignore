@@ -1,3 +1,5 @@
 WeatherApp/.vs/
 WeatherApp/WeatherApp/obj/
 WeatherApp/WeatherApp/bin/
+WeatherApp/.vscode/tasks.json
+WeatherApp/.vscode/launch.json
