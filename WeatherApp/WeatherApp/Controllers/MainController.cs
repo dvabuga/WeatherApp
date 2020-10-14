@@ -14,11 +14,11 @@ namespace WeatherApp.Controllers
 {
     public class MainController : Controller
     {
-        private readonly IWeatherService _weatherService;
+        private readonly IForecastService _weatherService;
         private readonly IFaultService _faultService;
         private readonly ApplicationDbContext _context;
 
-        public MainController(IWeatherService weatherService, IFaultService faultService, ApplicationDbContext context)
+        public MainController(IForecastService weatherService, IFaultService faultService, ApplicationDbContext context)
         {
             _weatherService = weatherService;
             _faultService = faultService;
