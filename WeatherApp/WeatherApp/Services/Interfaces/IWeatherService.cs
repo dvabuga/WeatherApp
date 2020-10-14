@@ -7,7 +7,7 @@ using WeatherApp.Models;
 
 namespace WeatherApp.Services.Interfaces
 {
-    public interface IWeatherService
+    public interface IForecastService
     {
         Task<JObject> GetCurrentForecast();
         Task<List<ForecastModel>> GetPreviousForecast();

@@ -37,7 +37,7 @@ namespace WeatherApp
 
             services.AddHostedService<UploadService>();
 
-            services.AddTransient<IWeatherService, WeatherService>();
+            services.AddTransient<IForecastService, OpenWeatherService>();
             services.AddTransient<IFaultService, FaultService>();
             services.AddHttpClient();
 

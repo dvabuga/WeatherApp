@@ -12,12 +12,12 @@ using WeatherApp.Services.Interfaces;
 
 namespace WeatherApp.Services
 {
-    public class WeatherService : IWeatherService
+    public class OpenWeatherService : IForecastService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly WeatherServiceSettings _configuration;
 
-        public WeatherService(IHttpClientFactory httpClientFactory, IOptions<WeatherServiceSettings> configuration)
+        public OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<WeatherServiceSettings> configuration)
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration.Value;

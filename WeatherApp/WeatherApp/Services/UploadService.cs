@@ -13,11 +13,11 @@ namespace WeatherApp.Services
     public class UploadService : BackgroundService
     {
         private readonly IServiceProvider _provider;
-        private readonly IWeatherService _weatherService;
+        private readonly IForecastService _weatherService;
         private readonly IFaultService _faultService;
 
 
-        public UploadService(IServiceProvider serviceProvider, IFaultService faultService, IWeatherService weatherService)
+        public UploadService(IServiceProvider serviceProvider, IFaultService faultService, IForecastService weatherService)
         {
             _provider = serviceProvider;
             _weatherService = weatherService;
