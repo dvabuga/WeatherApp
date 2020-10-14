@@ -30,7 +30,7 @@ namespace WeatherApp.Services
             var httpResponse = await client.GetAsync($"{_configuration.OpenWeatherApiUrl}onecall?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&exclude=minutely&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru");
             var content = await httpResponse.Content.ReadAsStringAsync();
             var dataObj = JsonConvert.DeserializeObject<JObject>(content);
-     
+
             return dataObj;
         }
 
@@ -48,11 +48,10 @@ namespace WeatherApp.Services
                 timePointsOfMesuareInterval.Add(date.ToUnixTimeSeconds());
                 i += 2;
             }
-            
+
             var urls = timePointsOfMesuareInterval.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
 
-            IEnumerable<Task<JObject>> downloadTasksQuery = from url in urls
-                                                            select ProcessURL(url, client); //urls.Select(url => ProcessURL(url, client));
+            IEnumerable<Task<JObject>> downloadTasksQuery = urls.Select(url => client.GetJobjectAsync(url)); 
 
             //start tasks
             Task<JObject>[] downloadTasks = downloadTasksQuery.ToArray();
@@ -63,17 +62,17 @@ namespace WeatherApp.Services
                 Time = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(c["current"]["dt"])).ToLocalTime(),
                 Temp = Convert.ToInt64(c["current"]["temp"])
             }).OrderBy(c => c.Time).ToList();
-   
+
             return formattedTasksResults;
         }
 
-       
-        async Task<JObject> ProcessURL(string url, HttpClient client)
-        {
-            var response = await client.GetAsync(url);
-            var urlContents = await response.Content.ReadAsStringAsync();
-            var dataObj = JsonConvert.DeserializeObject<JObject>(urlContents);
-            return dataObj;
-        }
+
+        // async Task<JObject> ProcessURL(string url, HttpClient client)
+        // {
+        //     var response = await client.GetAsync(url);
+        //     var urlContents = await response.Content.ReadAsStringAsync();
+        //     var dataObj = JsonConvert.DeserializeObject<JObject>(urlContents);
+        //     return dataObj;
+        // }
     }
 }

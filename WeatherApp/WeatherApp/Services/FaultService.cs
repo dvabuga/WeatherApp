@@ -27,16 +27,6 @@ namespace WeatherApp.Services
             _configuration = configuration.Value;
         }
 
-        //DRY
-        async Task<JObject> ProcessURL(string url, HttpClient client)
-        {
-            var response = await client.GetAsync(url);
-            var urlContents = await response.Content.ReadAsStringAsync();
-            var dataObj = JsonConvert.DeserializeObject<JObject>(urlContents);
-            return dataObj;
-        }
-
-
         public async Task<ChartModel> CalculateFaults(List<ForecastModel> previousForecasts)
         {
             var client = _httpClientFactory.CreateClient();
@@ -48,8 +38,8 @@ namespace WeatherApp.Services
             {
                 var datesUnixTime = previousForecasts.Select(forecast => forecast.Time.ToUnixTimeSeconds() - intervals[i] * 60 * 60).ToList();
                 var urls = datesUnixTime.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
-                IEnumerable<Task<JObject>> downloadTasksQuery = from url in urls
-                                                                select ProcessURL(url, client);
+                IEnumerable<Task<JObject>> downloadTasksQuery = urls.Select(url => client.GetJobjectAsync(url));
+
                 Task<JObject>[] downloadTasks = downloadTasksQuery.ToArray();
                 var finishedTasks = await Task.WhenAll(downloadTasks);
 
