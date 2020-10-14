@@ -13,5 +13,12 @@ namespace WeatherApp
 
             return Ok("1");
         }
+
+
+        public IActionResult IndexTwo()
+        {
+
+            return Ok("2");
+        }
     }
 }
