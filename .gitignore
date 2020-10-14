@@ -3,3 +3,8 @@ WeatherApp/WeatherApp/obj/
 WeatherApp/WeatherApp/bin/
 WeatherApp/.vscode/tasks.json
 WeatherApp/.vscode/launch.json
+WeatherApp/WeatherApp.Tests/obj/project.assets.json
+WeatherApp/WeatherApp.Tests/obj/project.nuget.cache
+WeatherApp/WeatherApp.Tests/obj/WeatherApp.Tests.csproj.nuget.dgspec.json
+WeatherApp/WeatherApp.Tests/obj/WeatherApp.Tests.csproj.nuget.g.props
+WeatherApp/WeatherApp.Tests/obj/WeatherApp.Tests.csproj.nuget.g.targets
