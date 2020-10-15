@@ -12,7 +12,7 @@ using WeatherApp.Services.Interfaces;
 
 namespace WeatherApp.Services
 {
-    public class OpenWeatherService : IForecastService
+    public class OpenWeatherService : WeatherBase, IForecastService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly WeatherServiceSettings _configuration;
@@ -22,7 +22,6 @@ namespace WeatherApp.Services
             _httpClientFactory = httpClientFactory;
             _configuration = configuration.Value;
         }
-
 
         public async Task<JObject> GetCurrentForecast()
         {
@@ -35,7 +34,7 @@ namespace WeatherApp.Services
         }
 
 
-        public async Task<List<ForecastModel>> GetPreviousForecast()
+        public async Task<IEnumerable<ForecastModel>> GetIntervalForecast()
         {
             var client = _httpClientFactory.CreateClient();
             var mesuareInterval = DateTime.Now.AddDays(-1).Date; //интервал на котором вычисляем погрешность - предыдущий день
@@ -51,19 +50,7 @@ namespace WeatherApp.Services
 
             var urls = timePointsOfMesuareInterval.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
 
-            IEnumerable<Task<JObject>> downloadTasksQuery = urls.Select(url => client.GetJobjectAsync(url)); 
-
-            //start tasks
-            Task<JObject>[] downloadTasks = downloadTasksQuery.ToArray();
-            var finishedTasks = await Task.WhenAll(downloadTasks);
-
-            var formattedTasksResults = finishedTasks.Select(c => new ForecastModel()
-            {
-                Time = DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(c["current"]["dt"])).ToLocalTime(),
-                Temp = Convert.ToInt64(c["current"]["temp"])
-            }).OrderBy(c => c.Time).ToList();
-
-            return formattedTasksResults;
+           return await GetForecastAsync(_httpClientFactory, urls);
         }
 
 

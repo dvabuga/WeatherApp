@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using System.Net.Http;
 using System.Threading.Tasks;
+using WeatherApp.Controllers;
 
 namespace WeatherApp.Tests
 {

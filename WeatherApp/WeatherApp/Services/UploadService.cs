@@ -62,7 +62,7 @@ namespace WeatherApp.Services
 
         private async Task StartUpload(Forecast forecast)
         {
-            var previousForecasts = await _weatherService.GetPreviousForecast();
+            var previousForecasts = await _weatherService.GetIntervalForecast();
             var model = await _faultService.CalculateFaults(previousForecasts);
             var fileStream = _faultService.GetFileWithFaults(model);
             try
