@@ -29,8 +29,7 @@ namespace WeatherApp.Services
 
         public async Task<ChartModel> CalculateFaults(IEnumerable<ForecastModel> previousForecasts)
         {
-            var intervalForecast = previousForecasts.ToList();
-            previousForecasts = previousForecasts.ToList();
+            var intervalForecast = previousForecasts as List<ForecastModel>;
 
             var chartModel = new ChartModel();
             var intervals = _configuration.Intervals.ToList();

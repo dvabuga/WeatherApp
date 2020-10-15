@@ -8,6 +8,5 @@ namespace WeatherApp.Services.Interfaces
     {
         public List<DateTimeOffset> GetIntervalTimePoints(int intervalStep, DateTimeOffset date1, DateTimeOffset? date2 = null);
 
-
     }
 }

@@ -25,10 +25,9 @@ namespace WeatherApp.Services
 
         public async Task<JObject> GetCurrentForecast()
         {
+            var url = $"{_configuration.OpenWeatherApiUrl}onecall?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&exclude=minutely&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru"; 
             var client = _httpClientFactory.CreateClient();
-            var httpResponse = await client.GetAsync($"{_configuration.OpenWeatherApiUrl}onecall?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&exclude=minutely&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru");
-            var content = await httpResponse.Content.ReadAsStringAsync();
-            var dataObj = JsonConvert.DeserializeObject<JObject>(content);
+            var dataObj = await client.GetJobjectAsync(url);
 
             return dataObj;
         }
@@ -41,11 +40,10 @@ namespace WeatherApp.Services
             var timePointsOfMesuareInterval = new List<long>();
 
             //get timePoints of mesuare interval
-            for (var i = 0; i < 24;)
+            for (var i = 0; i < 24; i += 2)
             {
                 var date = (DateTimeOffset)mesuareInterval.AddHours(i);
                 timePointsOfMesuareInterval.Add(date.ToUnixTimeSeconds());
-                i += 2;
             }
 
             var urls = timePointsOfMesuareInterval.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
