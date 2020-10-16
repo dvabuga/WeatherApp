@@ -27,7 +27,7 @@ namespace WeatherApp.Services
 
         public async Task<JObject> GetCurrentForecast()
         {
-            var url = $"{_configuration.OpenWeatherApiUrl}onecall?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&exclude=minutely&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru"; 
+            var url = $"{_configuration.OpenWeatherApiUrl}onecall?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&exclude=minutely&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru";
             var client = _httpClientFactory.CreateClient();
             var dataObj = await client.GetJobjectAsync(url);
 
@@ -38,21 +38,25 @@ namespace WeatherApp.Services
         public async Task<IEnumerable<ForecastModel>> GetIntervalForecast()
         {
             var client = _httpClientFactory.CreateClient();
+            var timePointsOfMesuareInterval = GetIntervalTimePoints();
+            var urls = timePointsOfMesuareInterval.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
+
+            return await _getForecast.GetForecastAsync(_httpClientFactory, urls);
+        }
+
+
+        private List<long> GetIntervalTimePoints()
+        {
             var mesuareInterval = DateTime.Now.AddDays(-1).Date; //интервал на котором вычисляем погрешность - предыдущий день
             var timePointsOfMesuareInterval = new List<long>();
-
-            //get timePoints of mesuare interval
+            
             for (var i = 0; i < 24; i += 2)
             {
                 var date = (DateTimeOffset)mesuareInterval.AddHours(i);
                 timePointsOfMesuareInterval.Add(date.ToUnixTimeSeconds());
             }
-
-            var urls = timePointsOfMesuareInterval.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
-
-           return await _getForecast.GetForecastAsync(_httpClientFactory, urls);
+            return timePointsOfMesuareInterval;
         }
-
 
         // async Task<JObject> ProcessURL(string url, HttpClient client)
         // {
