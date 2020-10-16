@@ -16,15 +16,18 @@ using YandexDisk.Client.Http;
 
 namespace WeatherApp.Services
 {
-    public class FaultService : WeatherBase, IFaultService
+    public class FaultService : IFaultService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly WeatherServiceSettings _configuration;
 
-        public FaultService(IHttpClientFactory httpClientFactory, IOptions<WeatherServiceSettings> configuration) 
+        private readonly IGetForecast _getForecast;
+
+        public FaultService(IHttpClientFactory httpClientFactory, IOptions<WeatherServiceSettings> configuration, IGetForecast getForecast) 
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration.Value;
+            _getForecast = getForecast;
         }
 
         public async Task<ChartModel> CalculateFaults(IEnumerable<ForecastModel> previousForecasts)
@@ -38,7 +41,8 @@ namespace WeatherApp.Services
             {
                 var datesUnixTime = previousForecasts.Select(forecast => forecast.Time.ToUnixTimeSeconds() - intervals[i] * 60 * 60).ToList();
                 var urls = datesUnixTime.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
-                var f = await GetForecastAsync(_httpClientFactory, urls) as List<ForecastModel>;
+                var f = await _getForecast.GetForecastAsync(_httpClientFactory, urls) as List<ForecastModel>;
+                //ToDo: возможно вынести получение прогноза погоды с интервалом в сервис погоды
 
                 var chart = new List<(string date, double temp)>();
                 for (var j = 0; j < f.Count; j++)

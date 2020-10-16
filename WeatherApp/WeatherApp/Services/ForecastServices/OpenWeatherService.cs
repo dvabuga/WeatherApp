@@ -12,15 +12,17 @@ using WeatherApp.Services.Interfaces;
 
 namespace WeatherApp.Services
 {
-    public class OpenWeatherService : WeatherBase, IForecastService
+    public class OpenWeatherService : IForecastService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly WeatherServiceSettings _configuration;
+        private readonly IGetForecast _getForecast;
 
-        public OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<WeatherServiceSettings> configuration)
+        public OpenWeatherService(IHttpClientFactory httpClientFactory, IOptions<WeatherServiceSettings> configuration, IGetForecast getForecast)
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration.Value;
+            _getForecast = getForecast;
         }
 
         public async Task<JObject> GetCurrentForecast()
@@ -48,7 +50,7 @@ namespace WeatherApp.Services
 
             var urls = timePointsOfMesuareInterval.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
 
-           return await GetForecastAsync(_httpClientFactory, urls);
+           return await _getForecast.GetForecastAsync(_httpClientFactory, urls);
         }
 
 
