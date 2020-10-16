@@ -9,7 +9,7 @@ using System;
 
 namespace WeatherApp.Services
 {
-    public class WeatherBase : IGetForecast
+    public class ForecastBase : IGetForecast
     {
 
     }

@@ -15,13 +15,15 @@ namespace WeatherApp.Services
         private readonly IServiceProvider _provider;
         private readonly IForecastService _weatherService;
         private readonly IFaultService _faultService;
+        private readonly IStorageService _storage;
 
 
-        public UploadService(IServiceProvider serviceProvider, IFaultService faultService, IForecastService weatherService)
+        public UploadService(IServiceProvider serviceProvider, IFaultService faultService, IForecastService weatherService, IStorageService storage)
         {
             _provider = serviceProvider;
             _weatherService = weatherService;
             _faultService = faultService;
+            _storage = storage;
         }
 
 
@@ -70,7 +72,7 @@ namespace WeatherApp.Services
             var fileStream = _faultService.GetFileWithFaults(model);
             try
             {
-                await _faultService.UploadFaultsToStorage(fileStream);
+                await _storage.Upload(fileStream);
                 forecast.FaultUpdateLastDate = DateTimeOffset.Now;
             }
             catch (Exception ex)

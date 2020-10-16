@@ -12,6 +12,5 @@ namespace WeatherApp.Services.Interfaces
     {
         ChartModel CalculateFaults(IEnumerable<ForecastModel> historicalForecast, IEnumerable<IEnumerable<ForecastModel>> intervalForecast);
         Stream GetFileWithFaults(ChartModel faults);
-        Task UploadFaultsToStorage(Stream faultsFile);
     }
 }
