@@ -1,6 +1,6 @@
 using System;
 
-namespace WeatherApp.Models
+namespace WeatherApp.Files.SharedModels
 {
     public class ErrorViewModel
     {

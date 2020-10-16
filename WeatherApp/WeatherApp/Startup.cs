@@ -10,10 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WeatherApp.Models;
-using WeatherApp.Models.DB;
+using WeatherApp.DB;
+using WeatherApp.Files.SharedModels;
 using WeatherApp.Services;
 using WeatherApp.Services.Interfaces;
+
 
 namespace WeatherApp
 {

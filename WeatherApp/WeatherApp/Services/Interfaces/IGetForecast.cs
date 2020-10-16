@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using WeatherApp.Models;
+using WeatherApp.Files.SharedModels;
 
 namespace WeatherApp.Services
 {

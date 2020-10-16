@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using WeatherApp.Models.DB;
+using WeatherApp.DB;
+using WeatherApp.Files;
 using WeatherApp.Services.Interfaces;
 
 namespace WeatherApp.Services
@@ -69,7 +70,7 @@ namespace WeatherApp.Services
 
             var model = _faultService.CalculateFaults(historicalForecast, intervalForecast);
 
-            var fileStream = _faultService.GetFileWithFaults(model);
+            var fileStream =  FileManager.GetXlsx(model); //_faultService.GetFileWithFaults(model);
             try
             {
                 await _storage.Upload(fileStream);

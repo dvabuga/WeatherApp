@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using WeatherApp.Models;
-using WeatherApp.Models.DB;
+using WeatherApp.DB;
 using WeatherApp.Services.Interfaces;
 
 namespace WeatherApp.Controllers

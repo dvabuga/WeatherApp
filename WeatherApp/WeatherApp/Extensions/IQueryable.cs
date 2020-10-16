@@ -1,7 +1,7 @@
 
 using System;
 using System.Linq;
-using WeatherApp.Models.DB;
+using WeatherApp.DB;
 
 public static class IQueryable
 {

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using WeatherApp.Models;
+using WeatherApp.Files.SharedModels;
 using WeatherApp.Services.Interfaces;
 using YandexDisk.Client.Http;
 

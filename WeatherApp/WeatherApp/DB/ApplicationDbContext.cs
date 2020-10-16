@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace WeatherApp.Models.DB
+namespace WeatherApp.DB
 {
     public class ApplicationDbContext : DbContext
     {

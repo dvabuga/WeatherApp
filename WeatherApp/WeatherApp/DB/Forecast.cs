@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WeatherApp.Models.DB
+namespace WeatherApp.DB
 {
     public class Forecast
     {
