@@ -20,7 +20,6 @@ namespace WeatherApp.Services
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly WeatherServiceSettings _configuration;
-
         private readonly IGetForecast _getForecast;
 
         public FaultService(IHttpClientFactory httpClientFactory, IOptions<WeatherServiceSettings> configuration, IGetForecast getForecast) 
@@ -30,24 +29,21 @@ namespace WeatherApp.Services
             _getForecast = getForecast;
         }
 
-        public async Task<ChartModel> CalculateFaults(IEnumerable<ForecastModel> previousForecasts)
+        public ChartModel CalculateFaults(IEnumerable<ForecastModel> historicalForecast, IEnumerable<IEnumerable<ForecastModel>> intervalForecast)
         {
-            var intervalForecast = previousForecasts as List<ForecastModel>;
+            var hForecast = historicalForecast as List<ForecastModel>;
+            var iForecast = intervalForecast as List<List<ForecastModel>>;
 
             var chartModel = new ChartModel();
             var intervals = _configuration.Intervals.ToList();
 
-            for (var i = 0; i < intervals.Count(); i++)
+            for (var i = 0; i < iForecast.Count(); i++)
             {
-                var datesUnixTime = previousForecasts.Select(forecast => forecast.Time.ToUnixTimeSeconds() - intervals[i] * 60 * 60).ToList();
-                var urls = datesUnixTime.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
-                var f = await _getForecast.GetForecastAsync(_httpClientFactory, urls) as List<ForecastModel>;
-                //ToDo: возможно вынести получение прогноза погоды с интервалом в сервис погоды
-
+                var f = iForecast[i];
                 var chart = new List<(string date, double temp)>();
-                for (var j = 0; j < f.Count; j++)
+                for (var j = 0; j < iForecast[i].Count; j++)
                 {
-                    var temp = Math.Abs(intervalForecast[j].Temp - f[j].Temp);
+                    var temp = Math.Abs(hForecast[j].Temp - f[j].Temp);
                     chart.Add((f[j].Time.ToString("MM-dd-yy H:mm:ss"), temp));
                 }
 

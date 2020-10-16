@@ -10,6 +10,7 @@ namespace WeatherApp.Services.Interfaces
     public interface IForecastService
     {
         Task<JObject> GetCurrentForecast();
-        Task<IEnumerable<ForecastModel>> GetIntervalForecast();
+        Task<IEnumerable<ForecastModel>> GetHistoricalForecast();
+        Task<List<List<ForecastModel>>> GetIntervalForecast(IEnumerable<ForecastModel> historicalForecast);
     }
 }

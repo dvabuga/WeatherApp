@@ -35,7 +35,7 @@ namespace WeatherApp.Services
         }
 
 
-        public async Task<IEnumerable<ForecastModel>> GetIntervalForecast()
+        public async Task<IEnumerable<ForecastModel>> GetHistoricalForecast()
         {
             var client = _httpClientFactory.CreateClient();
             var timePointsOfMesuareInterval = GetIntervalTimePoints();
@@ -44,12 +44,27 @@ namespace WeatherApp.Services
             return await _getForecast.GetForecastAsync(_httpClientFactory, urls);
         }
 
+        public async Task<List<List<ForecastModel>>> GetIntervalForecast(IEnumerable<ForecastModel> historicalForecast)
+        {
+            var intervals = _configuration.Intervals.ToList();
+            var intervalForecast = new List<List<ForecastModel>>();
+
+            for (var i = 0; i < intervals.Count(); i++)
+            {
+                var datesUnixTime = historicalForecast.Select(forecast => forecast.Time.ToUnixTimeSeconds() - intervals[i] * 60 * 60).ToList();
+                var urls = datesUnixTime.Select(time => $"{_configuration.OpenWeatherApiUrl}onecall/timemachine?lat={_configuration.CityCoords.Latitude}&lon={_configuration.CityCoords.Longitude}&dt={time}&appid={_configuration.OpenWeatherAppId}&units=metric&lang=ru").ToList();
+                intervalForecast.Add(await _getForecast.GetForecastAsync(_httpClientFactory, urls) as List<ForecastModel>);
+            }
+
+            return intervalForecast;
+        }
+
 
         private List<long> GetIntervalTimePoints()
         {
             var mesuareInterval = DateTime.Now.AddDays(-1).Date; //интервал на котором вычисляем погрешность - предыдущий день
             var timePointsOfMesuareInterval = new List<long>();
-            
+
             for (var i = 0; i < 24; i += 2)
             {
                 var date = (DateTimeOffset)mesuareInterval.AddHours(i);

@@ -35,8 +35,10 @@ namespace WeatherApp.Controllers
 
             _context.Forecasts.AsQueryable<Forecast>().AddOrUpdateByCityName(_context, current, daily);
 
-            var previousForecasts = await _weatherService.GetIntervalForecast();
-            var model = await _faultService.CalculateFaults(previousForecasts);
+            var historicalForecast = await _weatherService.GetHistoricalForecast();
+            var intervalForecast = await _weatherService.GetIntervalForecast(historicalForecast);
+
+            var model = _faultService.CalculateFaults(historicalForecast, intervalForecast);
 
             return View("ShowChart", model);
         }
