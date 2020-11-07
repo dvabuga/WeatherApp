@@ -36,7 +36,7 @@ namespace WeatherApp
                                                 options.UseNpgsql(connectionString, b =>
                                                             b.MigrationsAssembly(migrationsAssembly)));
 
-            services.AddHostedService<UploadService>();
+           // services.AddHostedService<UploadService>();
 
             services.AddTransient<IStorageService, YandexStorage>();
             services.AddTransient<IGetForecast, ForecastBase>();
