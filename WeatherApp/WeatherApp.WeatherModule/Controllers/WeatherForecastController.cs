@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using WeatherApp.Files;
 
 namespace WeatherApp.WeatherModule.Controllers
 {
+    [Module("TestWeatherModule")] 
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -18,9 +20,9 @@ namespace WeatherApp.WeatherModule.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController()//ILogger<WeatherForecastController> logger
         {
-            _logger = logger;
+            //_logger = logger;
         }
 
         [HttpGet]

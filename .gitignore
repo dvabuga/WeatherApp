@@ -261,3 +261,11 @@ WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.WeatherMo
 WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.WeatherModule.runtimeconfig.dev.json
 WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.WeatherModule.runtimeconfig.json
 WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/Properties/launchSettings.json
+WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/ClosedXML.dll
+WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/DocumentFormat.OpenXml.dll
+WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/ExcelNumberFormat.dll
+WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/Newtonsoft.Json.dll
+WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/System.IO.Packaging.dll
+WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.Files.dll
+WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.Files.pdb
+WeatherApp/WeatherApp.WeatherModule/obj/Debug/netcoreapp3.1/WeatherApp.WeatherModule.csproj.CopyComplete

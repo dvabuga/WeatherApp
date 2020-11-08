@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WeatherApp.Files;
 
 namespace WeatherApp.Controllers
 {
@@ -26,18 +27,23 @@ namespace WeatherApp.Controllers
                 using (var archive = new ZipArchive(stream))
                 {
                     var entities = archive.Entries;
-                    var dll = entities.Where(c => c.Name.Contains(".dll")).FirstOrDefault();
+                    var dlls = entities.Where(c => c.Name.IndexOf(".dll") != -1).ToList();
 
-                    using (var ss = dll.Open())
+                    foreach (var dll in dlls)
                     {
-                        using (var mem = new MemoryStream())
+                        using (var ss = dll.Open())
                         {
-                            ss.CopyTo(mem);
-                            var cont = Assembly.Load(mem.ToArray());
-                            var all = cont.GetTypes();
-                            var t = cont.GetType("WeatherApp.WeatherModule.Controllers.WeatherForecastController");
-                            var inst = Activator.CreateInstance(t);
-                            var r = t.InvokeMember("Get",  BindingFlags.InvokeMethod, null, inst, null);
+                            using (var mem = new MemoryStream())
+                            {
+                                ss.CopyTo(mem);
+                                var cont = Assembly.Load(mem.ToArray());
+                                var t = cont.GetTypes().Where(t => t.GetCustomAttributes(typeof(ModuleAttribute), true).Length > 0).FirstOrDefault();
+                                if (t != null)
+                                {
+                                    var inst = Activator.CreateInstance(t);
+                                    var r = t.InvokeMember("Get", BindingFlags.InvokeMethod, null, inst, null);
+                                }
+                            }
                         }
                     }
                 }
