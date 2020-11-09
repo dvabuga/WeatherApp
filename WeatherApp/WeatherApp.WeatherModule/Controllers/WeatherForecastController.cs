@@ -26,6 +26,7 @@ namespace WeatherApp.WeatherModule.Controllers
         }
 
         [HttpGet]
+        [GetData]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
