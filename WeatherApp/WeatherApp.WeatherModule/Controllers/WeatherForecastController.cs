@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WeatherApp.Files;
 
+[assembly:ModuleAssemblyAttribute("WeatherModule")]
 namespace WeatherApp.WeatherModule.Controllers
 {
-    [Module("TestWeatherModule")] 
+    [Module] 
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase

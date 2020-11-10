@@ -11,32 +11,7 @@ namespace WeatherApp.Services
 {
     public class ModuleService : IModuleInterface
     {
-        public byte[] GetAssembly(IFormFile file)
-        {
-            byte[] assembly = null;
-            using (var stream = file.OpenReadStream())
-            {
-                using (var archive = new ZipArchive(stream))
-                {
-                    var dlls = archive.Entries.Where(c => c.Name.IndexOf(".dll") != -1).ToList();
-
-                    foreach (var dll in dlls) //сделать атрибут для сборки
-                    {
-                        using (var archiveEntryStream = dll.Open())
-                        {
-                            using (var mem = new MemoryStream())
-                            {
-                                archiveEntryStream.CopyTo(mem);
-                                assembly = mem.ToArray();
-                            }
-                        }
-                    }
-                }
-            }
-            return assembly;
-        }
-
-
+        
         public Type GetType(byte[] assembly)
         {
             var a = Assembly.Load(assembly.ToArray());

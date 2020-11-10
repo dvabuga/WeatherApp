@@ -7,7 +7,7 @@ namespace WeatherApp.Services
 {
     public interface IModuleInterface
     {
-        public byte[] GetAssembly(IFormFile file);
+        //public byte[] GetAssembly(IFormFile file);
         public Type GetType(byte[] assembly);
         public object? InvokeMethod(Type t);
     }
