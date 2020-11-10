@@ -29,7 +29,7 @@ namespace WeatherApp.Controllers
         [HttpPost]
         public void Upload(IFormFile uploadedFile)
         {
-            var assm = GetAssembly(uploadedFile);
+            var module = GetModule(uploadedFile);
             //запись полученной сборки в бд
 
         }
@@ -37,9 +37,9 @@ namespace WeatherApp.Controllers
 
 
 
-        private (string AssemblyName, string AssemblyAuthor, byte[])? GetAssembly(IFormFile file)
+        private (string AssemblyName, string AssemblyAuthor, byte[])? GetModule(IFormFile file)
         {
-            (string, string, byte[])? assemblyInfo = null;
+            (string, string, byte[])? moduleInfo = null;
 
             using (var stream = file.OpenReadStream())
             {
@@ -61,9 +61,9 @@ namespace WeatherApp.Controllers
                                 if (hasAssemblyAttribute)
                                 {
                                     var assemblyAttribute = (ModuleAssemblyAttribute)assembly.GetCustomAttribute(typeof(ModuleAssemblyAttribute));
-                                    var assemblyName = assemblyAttribute.name;
-                                    var assemblyAuthor = assemblyAttribute.author;
-                                    assemblyInfo = (assemblyName, assemblyAuthor, assemblyArr);
+                                    var moduleName = assemblyAttribute.name;
+                                    var moduleAuthor = assemblyAttribute.author;
+                                    moduleInfo = (moduleName, moduleAuthor, assemblyArr);
                                     break;
                                 }
                             }
@@ -72,7 +72,7 @@ namespace WeatherApp.Controllers
                 }
             }
 
-            return assemblyInfo;
+            return moduleInfo;
         }
     }
 }
