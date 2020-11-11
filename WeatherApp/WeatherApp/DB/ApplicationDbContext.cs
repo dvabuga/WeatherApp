@@ -14,5 +14,7 @@ namespace WeatherApp.DB
         }
 
         public DbSet<Forecast> Forecasts { get; set; }
+
+        public DbSet<Module> Modules { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using WeatherApp.Files;
 
-[assembly:ModuleAssemblyAttribute("WeatherModule")]
+[assembly:ModuleAssemblyAttribute("WeatherModule", 1)]
 namespace WeatherApp.WeatherModule.Controllers
 {
     [Module] 

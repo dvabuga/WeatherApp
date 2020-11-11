@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WeatherApp.DB;
 using WeatherApp.Files;
+using Module = WeatherApp.DB.Module;
 
 namespace WeatherApp.Controllers
 {
@@ -26,20 +28,69 @@ namespace WeatherApp.Controllers
         }
 
 
+        [HttpGet("Get")]
+        public IActionResult Get(Guid? Id = null)
+        {
+            var modules = new List<Module>();
+            var modulesQuery = _context.Modules.AsQueryable();
+
+            if (Id == null)
+            {
+                modules = modulesQuery.ToList();
+            }
+            else
+            {
+                modules = modulesQuery.Where(c => c.Id == Id).ToList();
+            }
+
+            return Ok(new
+            {
+                result = "success",
+                value = modules
+            });
+
+        }
+
         [HttpPost]
-        public void Upload(IFormFile uploadedFile)
+        public IActionResult Add(IFormFile uploadedFile)
         {
             var module = GetModule(uploadedFile);
-            //запись полученной сборки в бд
+            var moduleAlredyExsit = _context.Modules.Where(c => c.Name == module.Value.ModuleName &
+                                   c.Author == module.Value.ModuleAuthor &
+                                   c.Version == module.Value.ModuleVersion).Any();
 
+            if (moduleAlredyExsit)
+            {
+                return Ok(new
+                {
+                    result = "error",
+                    message = "module with such propertys alredy exists"
+                });
+            }
+
+            var newModule = new Module()
+            {
+                Id = Guid.NewGuid(),
+                Author = module.Value.ModuleAuthor,
+                Name = module.Value.ModuleName,
+                Version = module.Value.ModuleVersion,
+                UploadDate = DateTimeOffset.Now
+            };
+            _context.Add(newModule);
+            _context.SaveChanges();
+
+            return Ok(new
+            {
+                result = "success",
+                value = newModule.Id
+            });
         }
 
 
 
-
-        private (string AssemblyName, string AssemblyAuthor, byte[])? GetModule(IFormFile file)
+        private (string ModuleName, string ModuleAuthor, int ModuleVersion, byte[])? GetModule(IFormFile file)
         {
-            (string, string, byte[])? moduleInfo = null;
+            (string, string, int, byte[])? moduleInfo = null;
 
             using (var stream = file.OpenReadStream())
             {
@@ -47,7 +98,7 @@ namespace WeatherApp.Controllers
                 {
                     var dlls = archive.Entries.Where(c => c.Name.IndexOf(".dll") != -1).ToList();
 
-                    foreach (var dll in dlls) 
+                    foreach (var dll in dlls)
                     {
                         using (var archiveEntryStream = dll.Open())
                         {
@@ -63,7 +114,8 @@ namespace WeatherApp.Controllers
                                     var assemblyAttribute = (ModuleAssemblyAttribute)assembly.GetCustomAttribute(typeof(ModuleAssemblyAttribute));
                                     var moduleName = assemblyAttribute.name;
                                     var moduleAuthor = assemblyAttribute.author;
-                                    moduleInfo = (moduleName, moduleAuthor, assemblyArr);
+                                    var moduleVersion = assemblyAttribute.version;
+                                    moduleInfo = (moduleName, moduleAuthor, moduleVersion, assemblyArr);
                                     break;
                                 }
                             }

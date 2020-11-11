@@ -269,3 +269,4 @@ WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/System.IO.Packaging.
 WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.Files.dll
 WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.Files.pdb
 WeatherApp/WeatherApp.WeatherModule/obj/Debug/netcoreapp3.1/WeatherApp.WeatherModule.csproj.CopyComplete
+WeatherApp/WeatherApp.WeatherModule/obj/WeatherApp.WeatherModule.csproj.EntityFrameworkCore.targets
