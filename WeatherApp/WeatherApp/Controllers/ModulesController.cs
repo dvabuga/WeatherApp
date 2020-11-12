@@ -74,6 +74,7 @@ namespace WeatherApp.Controllers
                 Author = module.Value.ModuleAuthor,
                 Name = module.Value.ModuleName,
                 Version = module.Value.ModuleVersion,
+                Assembly = module.Value.Item4,
                 UploadDate = DateTimeOffset.Now
             };
             _context.Add(newModule);
@@ -88,9 +89,9 @@ namespace WeatherApp.Controllers
 
 
 
-        private (string ModuleName, string ModuleAuthor, int ModuleVersion, byte[])? GetModule(IFormFile file)
+        private (string ModuleName, string ModuleAuthor, string ModuleVersion, byte[])? GetModule(IFormFile file)
         {
-            (string, string, int, byte[])? moduleInfo = null;
+            (string, string, string, byte[])? moduleInfo = null;
 
             using (var stream = file.OpenReadStream())
             {

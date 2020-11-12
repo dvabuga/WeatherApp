@@ -8,9 +8,9 @@ namespace WeatherApp.Files
     {
         public string name;
         public string author;
-        public int version;
+        public string version;
 
-        public ModuleAssemblyAttribute(string name, int version)
+        public ModuleAssemblyAttribute(string name, string version)
         {
             this.name = name;
             this.version = version;
