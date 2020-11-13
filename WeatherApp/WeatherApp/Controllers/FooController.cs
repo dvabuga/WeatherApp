@@ -10,7 +10,7 @@ namespace WeatherApp.Controllers
     {
         public IActionResult Index()
         {
-
+        
             return Ok("1");
         }
 

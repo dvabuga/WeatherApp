@@ -1,0 +1,65 @@
+@using WeatherApp.DB
+@model List<Module>
+
+<body>
+
+
+  <div class="container" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <!-- Button trigger modal -->
+    <div>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+        Загрузить новый модуль
+      </button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Загрузите .zip архив с модулем</h5>
+          </div>
+          <div class="modal-body">
+            <form asp-controller="Modules" asp-action="Add" method="post" enctype="multipart/form-data">
+              <input type="file" name="uploadedFile">
+              </br>
+              <input type="submit"></input>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Название модуля</th>
+          <th scope="col">Автор модуля</th>
+          <th scope="col">Версия модуля</th>
+          <th scope="col">Дата загрузки</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var module in Model)
+        {
+          <tr>
+            <td>@module.Name</td>
+            <td>@module.Author</td>
+            <td>@module.Version</td>
+            <td>@module.UploadDate</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+
+  </div>
+
+
+
+
+</body>

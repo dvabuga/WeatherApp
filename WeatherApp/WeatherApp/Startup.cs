@@ -75,7 +75,7 @@ namespace WeatherApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Main}/{action=ShowChart}/{id?}");
+                    pattern: "{controller=Modules}/{action=GetModules}/{Id?}");
             });
         }
     }

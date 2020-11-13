@@ -28,8 +28,7 @@ namespace WeatherApp.Controllers
         }
 
 
-        [HttpGet("Get")]
-        public IActionResult Get(Guid? Id = null)
+        public IActionResult GetModules([FromQuery]Guid? Id = null)
         {
             var modules = new List<Module>();
             var modulesQuery = _context.Modules.AsQueryable();
@@ -43,15 +42,17 @@ namespace WeatherApp.Controllers
                 modules = modulesQuery.Where(c => c.Id == Id).ToList();
             }
 
-            return Ok(new
-            {
-                result = "success",
-                value = modules
-            });
+
+            return View(modules);
+            // return Ok(new
+            // {
+            //     result = "success",
+            //     value = modules
+            // });
 
         }
 
-        [HttpPost]
+        
         public IActionResult Add(IFormFile uploadedFile)
         {
             var module = GetModule(uploadedFile);
@@ -80,11 +81,12 @@ namespace WeatherApp.Controllers
             _context.Add(newModule);
             _context.SaveChanges();
 
-            return Ok(new
-            {
-                result = "success",
-                value = newModule.Id
-            });
+            return RedirectToAction("Get");
+            // return Ok(new
+            // {
+            //     result = "success",
+            //     value = newModule.Id
+            // });
         }
 
 
