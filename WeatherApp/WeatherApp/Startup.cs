@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WeatherApp.Authorization;
 using WeatherApp.DB;
 using WeatherApp.Files.SharedModels;
 using WeatherApp.Services;
@@ -30,13 +32,23 @@ namespace WeatherApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration["DefaultConnection"]; 
+            var connectionString = Configuration["DefaultConnection"];
             var migrationsAssembly = typeof(ApplicationDbContext).GetTypeInfo().Assembly.GetName().Name;
             services.AddDbContext<ApplicationDbContext>(options =>
                                                 options.UseNpgsql(connectionString, b =>
                                                             b.MigrationsAssembly(migrationsAssembly)));
 
-           // services.AddHostedService<UploadService>();
+            var authConnectionString = Configuration["AuthConnection"];
+            var authMigrationsAssembly = typeof(IdentityContext).GetTypeInfo().Assembly.GetName().Name;
+            services.AddDbContext<IdentityContext>(options =>
+                                                options.UseNpgsql(authConnectionString, b =>
+                                                            b.MigrationsAssembly(authMigrationsAssembly)));
+
+
+            services.AddIdentity<User, IdentityRole>()
+                    .AddEntityFrameworkStores<IdentityContext>();
+
+            // services.AddHostedService<UploadService>();
 
             services.AddTransient<IStorageService, YandexStorage>();
             services.AddTransient<IGetForecast, ForecastBase>();
@@ -69,6 +81,7 @@ namespace WeatherApp
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

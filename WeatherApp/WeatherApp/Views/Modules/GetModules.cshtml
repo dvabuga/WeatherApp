@@ -6,7 +6,7 @@
 
   <div class="container" style="display: flex; flex-direction: column; justify-content: space-between;">
     <!-- Button trigger modal -->
-    <div>
+    <div style="align-self: flex-end;">
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
         Загрузить новый модуль
       </button>
@@ -34,28 +34,29 @@
       </div>
     </div>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Название модуля</th>
-          <th scope="col">Автор модуля</th>
-          <th scope="col">Версия модуля</th>
-          <th scope="col">Дата загрузки</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var module in Model)
-        {
+    <div>
+      <table class="table">
+        <thead>
           <tr>
-            <td>@module.Name</td>
-            <td>@module.Author</td>
-            <td>@module.Version</td>
-            <td>@module.UploadDate</td>
+            <th scope="col">Название модуля</th>
+            <th scope="col">Автор модуля</th>
+            <th scope="col">Версия модуля</th>
+            <th scope="col">Дата загрузки</th>
           </tr>
-        }
-      </tbody>
-    </table>
-
+        </thead>
+        <tbody>
+          @foreach (var module in Model)
+          {
+            <tr>
+              <td>@module.Name</td>
+              <td>@module.Author</td>
+              <td>@module.Version</td>
+              <td>@module.UploadDate</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
 
   </div>
 
