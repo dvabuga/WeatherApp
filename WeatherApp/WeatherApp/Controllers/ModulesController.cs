@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WeatherApp.DB;
@@ -12,6 +13,8 @@ using Module = WeatherApp.DB.Module;
 
 namespace WeatherApp.Controllers
 {
+    
+    [Authorize(Roles="developer")]
     public class ModulesController : Controller
     {
         private readonly ApplicationDbContext _context;

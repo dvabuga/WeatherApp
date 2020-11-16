@@ -88,7 +88,7 @@ namespace WeatherApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Modules}/{action=GetModules}/{Id?}");
+                    pattern: "{controller=Home}/{action=Index}/{Id?}");
             });
         }
     }
