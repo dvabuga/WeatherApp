@@ -13,8 +13,8 @@ using Module = WeatherApp.DB.Module;
 
 namespace WeatherApp.Controllers
 {
-    
-    [Authorize(Roles="developer")]
+
+    //[Authorize(Roles="developer")]
     public class ModulesController : Controller
     {
         private readonly ApplicationDbContext _context;

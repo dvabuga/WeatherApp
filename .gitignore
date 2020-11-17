@@ -270,3 +270,10 @@ WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.Files.dll
 WeatherApp/WeatherApp.WeatherModule/bin/Debug/netcoreapp3.1/WeatherApp.Files.pdb
 WeatherApp/WeatherApp.WeatherModule/obj/Debug/netcoreapp3.1/WeatherApp.WeatherModule.csproj.CopyComplete
 WeatherApp/WeatherApp.WeatherModule/obj/WeatherApp.WeatherModule.csproj.EntityFrameworkCore.targets
+WeatherApp/WeatherApp.Tests/bin/Debug/netcoreapp3.1/Microsoft.AspNetCore.Cryptography.Internal.dll
+WeatherApp/WeatherApp.Tests/bin/Debug/netcoreapp3.1/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+WeatherApp/WeatherApp.Tests/bin/Debug/netcoreapp3.1/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+WeatherApp/WeatherApp.Tests/bin/Debug/netcoreapp3.1/Microsoft.Extensions.Identity.Core.dll
+WeatherApp/WeatherApp.Tests/bin/Debug/netcoreapp3.1/Microsoft.Extensions.Identity.Stores.dll
+WeatherApp/WeatherApp.Tests/bin/Debug/netcoreapp3.1/WeatherApp.Files.dll
+WeatherApp/WeatherApp.Tests/bin/Debug/netcoreapp3.1/WeatherApp.Files.pdb
