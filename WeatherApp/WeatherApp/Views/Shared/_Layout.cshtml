@@ -131,13 +131,28 @@
 {
     <script>
 
-$.ajax({
-    type: "GET",
-    url: "/Menu/GetProfileMenu",
-    success: function (response) {
-        
-    }
+$('#dropdownMenuLink').on('click', function(){
+    GetDropDownMenu();
 });
+
+
+function GetDropDownMenu(){
+    $.ajax({
+        type: "GET",
+        url: "/Menu/GetProfileMenu",
+        success: function (response) {
+            var menuDiv = $(".dropdown-menu");
+            $.each(response, function(i, element)
+            {
+                var controllerAndAction = element.Item3.split('/');
+                var aElement = $('<a>').attr({'asp-controller': controllerAndAction[0], 'asp-action':controllerAndAction[1]});
+                aElement.text(element.Item2);
+                menuDiv.append(aElement);
+            });
+        }
+    });
+}
+
 
     </script>
 }

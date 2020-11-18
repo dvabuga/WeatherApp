@@ -20,22 +20,22 @@ namespace WeatherApp.Controllers
         }
 
 
-        private Dictionary<string, string> menu = new Dictionary<string, string>()
+        private List<(string, string, string)> menu = new List<(string, string, string)>
         {
-            {"administrator", "Я-администратор"},
-            {"developer","Я - разработчик"}
+            ("administrator", "Я-администратор", "Profile/GetAdmin"),
+            ("developer","Я-разработчик", "Profile/GetDeveloper")
         };
 
         [HttpGet]
-        public async Task<List<string>> GetProfileMenu()
+        public async Task<List<(string, string, string)>> GetProfileMenu()
         {
-            var menuItems = new List<string>();
+            var menuItems = new List<(string, string, string)>();
             var user = await _userManager.GetUserAsync(HttpContext.User);
             var userRoles = await _signInManager.UserManager.GetRolesAsync(user);
 
             foreach (var role in userRoles)
             {
-                var menuItem = menu.Where(c => c.Key == role).Select(c => c.Value).FirstOrDefault();
+                var menuItem = menu.Where(c => c.Item1 == role).FirstOrDefault();
                 menuItems.Add(menuItem);
             }
             return menuItems;

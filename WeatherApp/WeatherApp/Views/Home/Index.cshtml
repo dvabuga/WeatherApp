@@ -1,1 +1,32 @@
 ﻿<h2>Стартовая страница</h2>
+
+
+@section scripts
+{
+    <script>
+
+$('#dropdownMenuLink').on('click', function(){
+    GetDropDownMenuu();
+});
+
+
+function GetDropDownMenuu(){
+    $.ajax({
+        type: "GET",
+        url: "/Menu/GetProfileMenu",
+        success: function (response) {
+            var menuDiv = $(".dropdown-menu");
+            $.each(response, function(i, element)
+            {
+                var controllerAndAction = element.Item3.split('/');
+                var aElement = $('<a>').attr({'asp-controller': controllerAndAction[0], 'asp-action':controllerAndAction[1]});
+                aElement.text(element.Item2);
+                menuDiv.append(aElement);
+            });
+        }
+    });
+}
+
+
+    </script>
+}
