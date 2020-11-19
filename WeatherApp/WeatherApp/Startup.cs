@@ -59,8 +59,8 @@ namespace WeatherApp
             services.AddOptions();
             var section = Configuration.GetSection("WeatherServiceSettings");
             services.Configure<WeatherServiceSettings>(section);
-
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -32,16 +32,14 @@
                 </div>
                 @if (User.Identity.IsAuthenticated)
                 {
-                    
-
                     <div class="dropdown">
                         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Профиль
+                            Profile
                         </a>
 
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            
+
                             @* <a class="dropdown-item">Я - администратор</a>
                                 <a class="dropdown-item">Я - разработчик</a>
                                 <a class="dropdown-item">Я - менеджер</a>
@@ -127,32 +125,31 @@
 
 </html>
 
-@section scripts
-{
-    <script>
 
-$('#dropdownMenuLink').on('click', function(){
-    GetDropDownMenu();
-});
+<script>
 
-
-function GetDropDownMenu(){
-    $.ajax({
-        type: "GET",
-        url: "/Menu/GetProfileMenu",
-        success: function (response) {
-            var menuDiv = $(".dropdown-menu");
-            $.each(response, function(i, element)
-            {
-                var controllerAndAction = element.Item3.split('/');
-                var aElement = $('<a>').attr({'asp-controller': controllerAndAction[0], 'asp-action':controllerAndAction[1]});
-                aElement.text(element.Item2);
-                menuDiv.append(aElement);
-            });
-        }
+    $(document).ready(function () {
+        $('#dropdownMenuLink').on('click', function () {
+            GetDropDownMenu();
+        });
     });
-}
 
+    function GetDropDownMenu() {
+        $.ajax({
+            type: "GET",
+            url: "/Menu/GetProfileMenu",
+            success: function (response) {
+                console.log(response);
+                var menuDiv = $(".dropdown-menu");
+                $.each(response, function (i, element) {
+                    console.log(element);
+                    var controllerAndAction = element.path.split('/');
+                    var aElement = $('<a>').attr({ 'asp-controller': 'Main', 'asp-action': 'ShowChart', 'class':"dropdown-item" });
+                    aElement.text(element.text);
+                    menuDiv.append(aElement);
+                });
+            }
+        });
+    }
 
-    </script>
-}
+</script>
