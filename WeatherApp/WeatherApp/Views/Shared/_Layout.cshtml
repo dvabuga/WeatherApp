@@ -144,7 +144,7 @@
                 $.each(response, function (i, element) {
                     console.log(element);
                     var controllerAndAction = element.path.split('/');
-                    var aElement = $('<a>').attr({ 'asp-controller': 'Main', 'asp-action': 'ShowChart', 'class':"dropdown-item" });
+                    var aElement = $('<a>').attr({ 'href':"/" +  controllerAndAction[0] + "/" + controllerAndAction[1], 'class':"dropdown-item" });
                     aElement.text(element.text);
                     menuDiv.append(aElement);
                 });
