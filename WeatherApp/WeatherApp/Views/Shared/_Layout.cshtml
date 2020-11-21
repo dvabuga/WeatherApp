@@ -32,26 +32,18 @@
                 </div>
                 @if (User.Identity.IsAuthenticated)
                 {
+                    <div>
+                        <form  method="post" asp-area="" asp-controller="Account" asp-action="Logout">
+                            <a class="nav-link text-dark" href="javascript:;" onclick="parentNode.submit();">Logout</a>
+                        </form>
+                    </div>
                     <div class="dropdown">
                         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Profile
                         </a>
-
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-
-                            @* <a class="dropdown-item">Я - администратор</a>
-                                <a class="dropdown-item">Я - разработчик</a>
-                                <a class="dropdown-item">Я - менеджер</a>
-                                <a class="dropdown-item">Мой Профиль</a> *@
-                        </div>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink"></div>
                     </div>
-                    @* <div style="align-self: flex-end;">
-                        <p>@User.Identity.Name</p>
-                        <form method="post" asp-controller="Account" asp-action="Logout">
-                        <input type="submit" value="Выход" />
-                        </form>
-                        </div> *@
                 }
                 else
                 {
@@ -130,6 +122,11 @@
 
     $(document).ready(function () {
         $('#dropdownMenuLink').on('click', function () {
+            var menuDivv = $(".dropdown-menu").children();
+            if(menuDivv.length != 0)
+            {
+                return;
+            }
             GetDropDownMenu();
         });
     });
@@ -139,10 +136,8 @@
             type: "GET",
             url: "/Menu/GetProfileMenu",
             success: function (response) {
-                console.log(response);
                 var menuDiv = $(".dropdown-menu");
                 $.each(response, function (i, element) {
-                    console.log(element);
                     var controllerAndAction = element.path.split('/');
                     var aElement = $('<a>').attr({ 'href':"/" +  controllerAndAction[0] + "/" + controllerAndAction[1], 'class':"dropdown-item" });
                     aElement.text(element.text);

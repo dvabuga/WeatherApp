@@ -13,7 +13,6 @@ namespace WeatherApp.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
 
-
         public MenuController(SignInManager<User> signInManager, UserManager<User> userManager)
         {
             _userManager = userManager;
@@ -23,14 +22,15 @@ namespace WeatherApp.Controllers
 
         private List<(string, string, string)> menu = new List<(string, string, string)>
         {
-            ("administrator", "I am admin", "Profile/GetAdmin"),
-            ("developer","Я-разработчик", "Profile/GetDeveloper")
+            ("administrator", "I am admin", "Profile/AdminProfile"),
+            ("developer","I am developer", "Profile/DeveloperProfile"),
+            ("developer","I am manager", "Profile/ManagerProfile"),
+            ("developer","My profile", "Profile/UserProfile")
         };
 
         [HttpGet]
         public async Task<List<JObject>> GetProfileMenu()
         {
-            //async Task<List<(string, string, string)>>
             var obj = new List<JObject>();
             var menuItems = new List<(string, string, string)>();
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -45,9 +45,8 @@ namespace WeatherApp.Controllers
                     path = menuItem.Item3
                 });
                 obj.Add(o);
-                //menuItems.Add(menuItem);
             }
-            return obj;//menuItems;
+            return obj;
         }
     }
 }
