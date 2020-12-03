@@ -7,6 +7,7 @@ namespace WeatherApp.DB
     {
         [Key]
         public Guid Id { get; set; }
+        public Guid CreatedUserId { get; set; }
         public string Name { get; set; }
         public string Author { get; set; }
         public string Version { get; set; }

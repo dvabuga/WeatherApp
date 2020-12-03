@@ -4,11 +4,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WeatherApp.DB;
 using WeatherApp.Files;
+using WeatherApp.Services;
 using Module = WeatherApp.DB.Module;
 
 namespace WeatherApp.Controllers
@@ -18,10 +20,12 @@ namespace WeatherApp.Controllers
     public class ModulesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IModuleService _moduleService;
 
-        public ModulesController(ApplicationDbContext context)
+        public ModulesController(ApplicationDbContext context, IModuleService moduleService)
         {
             _context = context;
+            _moduleService = moduleService;
         }
 
         public IActionResult Index()
@@ -33,19 +37,7 @@ namespace WeatherApp.Controllers
 
         public IActionResult GetModules([FromQuery]Guid? Id = null)
         {
-            var modules = new List<Module>();
-            var modulesQuery = _context.Modules.AsQueryable();
-
-            if (Id == null)
-            {
-                modules = modulesQuery.ToList();
-            }
-            else
-            {
-                modules = modulesQuery.Where(c => c.Id == Id).ToList();
-            }
-
-
+            var modules = _moduleService.GetModules(Id);
             return View(modules);
             // return Ok(new
             // {
@@ -72,6 +64,9 @@ namespace WeatherApp.Controllers
                 });
             }
 
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserId = Guid.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier).Value);
+
             var newModule = new Module()
             {
                 Id = Guid.NewGuid(),
@@ -79,7 +74,8 @@ namespace WeatherApp.Controllers
                 Name = module.Value.ModuleName,
                 Version = module.Value.ModuleVersion,
                 Assembly = module.Value.Item4,
-                UploadDate = DateTimeOffset.Now
+                UploadDate = DateTimeOffset.Now,
+                CreatedUserId = currentUserId
             };
             _context.Add(newModule);
             _context.SaveChanges();

@@ -1,16 +1,25 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
+using WeatherApp.DB;
 using WeatherApp.Files;
+using Module = WeatherApp.DB.Module;
 
 namespace WeatherApp.Services
 {
-    public class ModuleService : IModuleInterface
+    public class ModuleService : IModuleService
     {
+        private readonly ApplicationDbContext _context;
+
+        public ModuleService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
         
         public Type GetType(byte[] assembly)
         {
@@ -33,6 +42,30 @@ namespace WeatherApp.Services
             var result = t.InvokeMember(method, BindingFlags.InvokeMethod, null, instance, null);
 
             return result;
+        }
+
+
+        public List<Module> GetModules(Guid? moduleId, Guid? userId )
+        {
+
+            var modules = new List<Module>();
+            var modulesQuery = _context.Modules.AsQueryable();
+
+            if(userId != null)
+            {
+                modulesQuery = modulesQuery.Where(c=>c.CreatedUserId == userId);
+            }
+
+            if (moduleId == null)
+            {
+                modules = modulesQuery.ToList();
+            }
+            else
+            {
+                modules = modulesQuery.Where(c => c.Id == moduleId).ToList();
+            }
+
+            return modules;
         }
     }
 }
