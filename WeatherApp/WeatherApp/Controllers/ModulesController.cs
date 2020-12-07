@@ -35,7 +35,7 @@ namespace WeatherApp.Controllers
         }
 
 
-        public IActionResult GetModules([FromQuery]Guid? Id = null)
+        public IActionResult GetModules([FromQuery] Guid? Id = null)
         {
             var modules = _moduleService.GetModules(Id);
             return View(modules);
@@ -47,9 +47,17 @@ namespace WeatherApp.Controllers
 
         }
 
-        
-        public IActionResult Add(IFormFile uploadedFile)
+
+        [HttpPost]
+        public IActionResult Add([FromForm] IFormFile uploadedFile)
         {
+
+            return Ok(new
+            {
+                result = "success",
+                message = "module with such propertys alredy exists"
+            });
+
             var module = GetModule(uploadedFile);
             var moduleAlredyExsit = _context.Modules.Where(c => c.Name == module.Value.ModuleName &
                                    c.Author == module.Value.ModuleAuthor &
@@ -80,12 +88,12 @@ namespace WeatherApp.Controllers
             _context.Add(newModule);
             _context.SaveChanges();
 
-            return RedirectToAction("Get");
-            // return Ok(new
-            // {
-            //     result = "success",
-            //     value = newModule.Id
-            // });
+            // return RedirectToAction("Get");
+            return Ok(new
+            {
+                result = "success",
+                value = newModule.Id
+            });
         }
 
 

@@ -1,0 +1,108 @@
+@using System;
+@using WeatherApp.DB;
+@using System.Collections.Generic;
+@model List<Module>
+
+
+@if (@Model.Count == 0)
+{
+  <div style="display:flex; flex-direction:column; align-items:center;">
+    <div>
+      <h2>Вы пока не загрузили ни одного модуля!</h2>
+    </div>
+    <div>
+      <h2>
+        <a style="border-bottom:dashed; cursor:default" data-toggle="modal" data-target="#exampleModalDownload">Загрузить</a>
+      </h2>
+    </div>
+  </div>
+
+  <div class="modal fade" id="exampleModalDownload" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Загрузите .zip архив с модулем</h5>
+        </div>
+        <div class="modal-body">
+          @* 
+          //ToDo: Вставить спиннер
+          <div class="spinner-border" role="status" >
+            <span class="sr-only">Loading...</span>
+          </div> *@
+          <form asp-controller="Modules" asp-action="Add" method="post" enctype="multipart/form-data">
+              <input id="myfiles" type="file" name="uploadedFile" style="margin-bottom: 5px;">
+              <input id="sendform" type="submit"></input>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+else
+{
+  <div class="table">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Название модуля</th>
+          <th scope="col">Версия модуля</th>
+          <th scope="col">Дата загрузки</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var module in @Model)
+        {
+          <tr>
+            <td>@module.Name</td>
+            <td>@module.Version</td>
+            <td>@module.UploadDate</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+
+@section scripts
+{
+
+<script>
+
+
+ $(document).ready(function () {
+
+  $('form').submit(function(){
+    
+    //запускать спиннер
+    var input = document.getElementById("myfiles")
+    var file = input.files[0];
+    var data = new FormData();
+    data.append('uploadedFile', file);
+
+    $.ajax(
+    {
+      url: "/Modules/Add",
+      data: data,
+      processData: false,
+      contentType: false,
+      type: "POST",
+      success: function (data) {
+        //останавливать спиннер и выводить сообщение о загрузке модуля
+      }
+    });
+
+    return false;
+  
+
+
+  });      
+
+    });
+</script>
+
+}

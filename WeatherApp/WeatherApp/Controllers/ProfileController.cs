@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using WeatherApp.Services;
@@ -29,10 +30,10 @@ namespace WeatherApp.Controllers
         {
             ClaimsPrincipal currentUser = this.User;
             var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-            _moduleService.GetModules();
+            var modules = _moduleService.GetModules(null, Guid.Parse(currentUserId));
             //передавать модули во вьюху
 
-            return View();
+            return View(modules);
         }
 
         public IActionResult ManagerProfile()
