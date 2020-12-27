@@ -9,15 +9,21 @@ namespace WeatherApp.Controllers
     public class ProfileController : Controller
     {
         private readonly IModuleService _moduleService;
+        private readonly ICityService _cityService;
 
-        public ProfileController(IModuleService moduleService)
+        public ProfileController(IModuleService moduleService, ICityService cityService)
         {
             _moduleService = moduleService;
+            _cityService = cityService;
         }
 
 
         public IActionResult UserProfile()
         {
+            var currentUserId = GetCurrentUserId();
+            var userCities = _cityService.GetUserCities(currentUserId);
+
+
             return View();
         }
 
@@ -28,9 +34,8 @@ namespace WeatherApp.Controllers
 
         public IActionResult DeveloperProfile()
         {
-            ClaimsPrincipal currentUser = this.User;
-            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var modules = _moduleService.GetModules(null, Guid.Parse(currentUserId));
+            var currentUserId = GetCurrentUserId();
+            var modules = _moduleService.GetModules(null, currentUserId);
             //передавать модули во вьюху
 
             return View(modules);
@@ -40,5 +45,14 @@ namespace WeatherApp.Controllers
         {
             return View();
         }
+
+
+        private Guid GetCurrentUserId()
+        {
+            ClaimsPrincipal currentUser = this.User;
+            var currentUserId = currentUser.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return Guid.Parse(currentUserId);
+        }
+
     }
 }
