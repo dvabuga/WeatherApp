@@ -19,7 +19,7 @@ namespace WeatherApp.Services
         public List<UserCity> GetUserCities(Guid userId)
         {
             var userCities = _context.UserCities
-                                     .Include(c => c.Cities)
+                                     .Include(c => c.City)
                                      .Where(c => c.UserId == userId)
                                      .ToList();
 

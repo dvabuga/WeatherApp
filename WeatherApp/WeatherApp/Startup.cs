@@ -50,6 +50,7 @@ namespace WeatherApp
 
             // services.AddHostedService<UploadService>();
 
+            services.AddTransient<ICityService, CityService>();
             services.AddTransient<IModuleService, ModuleService>();
             services.AddTransient<IStorageService, YandexStorage>();
             services.AddTransient<IGetForecast, ForecastBase>();

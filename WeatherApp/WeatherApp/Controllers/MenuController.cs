@@ -24,8 +24,8 @@ namespace WeatherApp.Controllers
         {
             ("administrator", "I am admin", "Profile/AdminProfile"),
             ("developer","I am developer", "Profile/DeveloperProfile"),
-            ("developer","I am manager", "Profile/ManagerProfile"),
-            ("developer","My profile", "Profile/UserProfile")
+            ("manager","I am manager", "Profile/ManagerProfile"),
+            ("user","My profile", "Profile/UserProfile")
         };
 
         [HttpGet]

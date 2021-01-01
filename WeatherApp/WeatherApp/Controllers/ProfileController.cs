@@ -24,7 +24,7 @@ namespace WeatherApp.Controllers
             var userCities = _cityService.GetUserCities(currentUserId);
 
 
-            return View();
+            return View(userCities);
         }
 
         public IActionResult AdminProfile()
