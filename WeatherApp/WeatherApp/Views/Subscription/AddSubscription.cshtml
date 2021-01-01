@@ -1,0 +1,47 @@
+<html>
+
+
+<body>
+<label for="autocomplete">Найдите ваш город в поиске: </label>
+<input id="autocomplete">
+</body>
+
+
+</html>
+
+@section scripts
+{
+<script>
+$("#autocomplete").autocomplete({
+  source: function(request, response){
+    var a = request.term;
+    $.ajax({
+         type: "GET",
+         url: "https://openweathermap.org/data/2.5/find?",
+         dataType: 'json',
+         data: {q: a, appid: "439d4b804bc8187953eb36d2a8c26a02", units: "metric"},
+         success: function( data ) {
+           response($.map( data.list, function( item ) {
+                return {
+                    label: item.sys.country + ", " + item.name,
+                    value: item.name,
+                }
+            }));
+         }
+       });
+  },
+      minLength: 4,
+      select: function( event, ui ) {
+        $.ajax({
+             type: "GET",
+             url: "https://api.openweathermap.org/data/2.5/weather?",
+             dataType: 'json',
+             data: {q: ui.item.value, appid: "c0af1aa233c58192993d296ad30aa068"},
+             success: function( data ) {
+            console.log(data);
+             }
+           });
+      }
+});
+</script>
+}
