@@ -10,11 +10,13 @@ namespace WeatherApp.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet]
@@ -32,6 +34,16 @@ namespace WeatherApp.Controllers
                 User user = new User { Email = model.Email, UserName = model.Email };
                 // добавляем пользователя
                 var result = await _userManager.CreateAsync(user, model.Password);
+
+                //добавляем дефолтную роль пользователя
+                await _userManager.AddToRoleAsync(user, "user");
+
+                //если пользователь разработчик, добавляем роль разработчика
+                if (model.IsDeveloper == true)
+                {
+                    await _userManager.AddToRoleAsync(user, "developer");
+                }
+
                 if (result.Succeeded)
                 {
                     // установка куки

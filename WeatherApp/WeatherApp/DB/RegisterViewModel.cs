@@ -18,5 +18,8 @@ namespace WeatherApp.DB
         [DataType(DataType.Password)]
         [Display(Name = "Подтвердить пароль")]
         public string PasswordConfirm { get; set; }
+
+        [Display(Name = "Я разработчик")]
+        public bool IsDeveloper { get; set; }
     }
 }
