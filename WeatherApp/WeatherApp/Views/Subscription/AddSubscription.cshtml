@@ -1,7 +1,19 @@
+@using WeatherApp.DB
+@model List<Service>
+
 <html>
 
 
 <body>
+
+  @{
+    foreach(var service in @Model)
+    {
+      <input type="checkbox"></input>
+    }
+
+
+  }
 <label for="autocomplete">Найдите ваш город в поиске: </label>
 <input id="autocomplete">
 </body>
