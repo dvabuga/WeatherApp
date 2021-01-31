@@ -1,5 +1,7 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using WeatherApp.DB;
+using WeatherApp.Models;
 
 namespace WeatherApp.Controllers
 {
@@ -13,8 +15,20 @@ namespace WeatherApp.Controllers
 
         public IActionResult AddSubscription()
         {
+            var services = _context.Services.Select(a => new ServiceSelection()
+            {
+                DateTimeCreate = a.DateTimeCreate,
+                Description = a.Description,
+                Id = a.Id,
+                Name = a.Name,
+                Type = a.Type,
+                IsSelected = false
+            }).ToList();
+            var viewModel = new SubscriptionViewModel();
 
-            return View();
+            viewModel.Services = services;
+
+            return View(viewModel);
         }
 
 

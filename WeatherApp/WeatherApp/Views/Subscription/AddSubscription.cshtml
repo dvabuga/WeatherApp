@@ -1,21 +1,29 @@
+@using WeatherApp.Models
 @using WeatherApp.DB
-@model List<Service>
+@model SubscriptionViewModel
 
 <html>
 
 
 <body>
 
-  @{
-    foreach(var service in @Model)
-    {
-      <input type="checkbox"></input>
-    }
+<form>
+@{  
+  
+      <label>Выберите сервисы</label>
+      @Html.EditorFor(a=>a.Services)
+      
+}
+  
+  <label for="autocomplete">Найдите ваш город в поиске: </label>
+  <input id="autocomplete">
+</form>
 
 
-  }
-<label for="autocomplete">Найдите ваш город в поиске: </label>
-<input id="autocomplete">
+
+
+
+
 </body>
 
 

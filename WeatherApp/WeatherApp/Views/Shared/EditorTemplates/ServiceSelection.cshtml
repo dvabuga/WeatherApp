@@ -1,0 +1,8 @@
+@using WeatherApp.Models
+@model ServiceSelection
+
+<div>
+    @Model.Name
+    @Html.CheckBoxFor(a=>a.IsSelected)
+    @Html.HiddenFor(a=>a.Id)
+</div>

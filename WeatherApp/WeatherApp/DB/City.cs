@@ -10,6 +10,7 @@ namespace WeatherApp.DB
             [Key]
             public Guid Id { get; set; }
 
+            [Display(Name = "Город")]
             public string Name { get; set; }
 
             public string Lat { get; set; }
